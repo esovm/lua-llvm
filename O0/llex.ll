@@ -3,103 +3,107 @@ source_filename = "llex.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-%struct.lua_State = type { %struct.GCObject*, i8, i8, i16, i8, %struct.lua_TValue*, %struct.global_State*, %struct.CallInfo*, i32*, %struct.lua_TValue*, %struct.lua_TValue*, %struct.UpVal*, %struct.GCObject*, %struct.lua_State*, %struct.lua_longjmp*, %struct.CallInfo, void (%struct.lua_State*, %struct.lua_Debug*)*, i64, i32, i32, i32, i16, i16, i32, i8 }
-%struct.global_State = type { i8* (i8*, i8*, i64, i64)*, i8*, i64, i64, i64, i64, %struct.stringtable, %struct.lua_TValue, i32, i8, i8, i8, i8, %struct.GCObject*, %struct.GCObject**, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.lua_State*, i32, i32, i32, i32 (%struct.lua_State*)*, %struct.lua_State*, double*, %struct.TString*, [24 x %struct.TString*], [9 x %struct.Table*], [53 x [2 x %struct.TString*]] }
+%struct.lua_State = type { %struct.GCObject*, i8, i8, i8, i8, i16, %union.StackValue*, %struct.global_State*, %struct.CallInfo*, i32*, %union.StackValue*, %union.StackValue*, %struct.UpVal*, %struct.GCObject*, %struct.lua_State*, %struct.lua_longjmp*, %struct.CallInfo, void (%struct.lua_State*, %struct.lua_Debug*)*, i64, i32, i32, i32, i32, i32 }
+%struct.global_State = type { i8* (i8*, i8*, i64, i64)*, i8*, i64, i64, i64, i64, %struct.stringtable, %struct.TValue, %struct.TValue, i32, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, %struct.GCObject*, %struct.GCObject**, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.lua_State*, i32 (%struct.lua_State*)*, %struct.lua_State*, %struct.TString*, [25 x %struct.TString*], [9 x %struct.Table*], [53 x [2 x %struct.TString*]], void (i8*, i8*, i32)*, i8* }
 %struct.stringtable = type { %struct.TString**, i32, i32 }
-%struct.lua_TValue = type { %union.Value, i32 }
+%struct.TValue = type { %union.Value, i8 }
 %union.Value = type { %struct.GCObject* }
 %struct.TString = type { %struct.GCObject*, i8, i8, i8, i8, i32, %union.anon }
 %union.anon = type { i64 }
-%struct.Table = type { %struct.GCObject*, i8, i8, i8, i8, i32, %struct.lua_TValue*, %struct.Node*, %struct.Node*, %struct.Table*, %struct.GCObject* }
-%struct.Node = type { %struct.lua_TValue, %union.TKey }
-%union.TKey = type { %struct.anon }
-%struct.anon = type { %union.Value, i32, i32 }
-%struct.UpVal = type opaque
+%struct.Table = type { %struct.GCObject*, i8, i8, i8, i8, i32, %struct.TValue*, %union.Node*, %union.Node*, %struct.Table*, %struct.GCObject* }
+%union.Node = type { %struct.NodeKey }
+%struct.NodeKey = type { %union.Value, i8, i8, i32, %union.Value }
+%union.StackValue = type { %struct.TValue }
+%struct.UpVal = type { %struct.GCObject*, i8, i8, %struct.TValue*, %union.anon.4 }
+%union.anon.4 = type { %struct.anon.5 }
+%struct.anon.5 = type { %struct.UpVal*, %struct.UpVal** }
 %struct.GCObject = type { %struct.GCObject*, i8, i8 }
 %struct.lua_longjmp = type opaque
-%struct.CallInfo = type { %struct.lua_TValue*, %struct.lua_TValue*, %struct.CallInfo*, %struct.CallInfo*, %union.anon.0, i64, i16, i16 }
-%union.anon.0 = type { %struct.anon.2 }
-%struct.anon.2 = type { i32 (%struct.lua_State*, i32, i64)*, i64, i64 }
-%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i32, i32, i32, i8, i8, i8, i8, [60 x i8], %struct.CallInfo* }
+%struct.CallInfo = type { %union.StackValue*, %union.StackValue*, %struct.CallInfo*, %struct.CallInfo*, %union.anon.0, %union.anon.2, i16, i16 }
+%union.anon.0 = type { %struct.anon.1 }
+%struct.anon.1 = type { i32 (%struct.lua_State*, i32, i64)*, i64, i64 }
+%union.anon.2 = type { i32 }
+%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i64, i32, i32, i32, i8, i8, i8, i8, i16, i16, [60 x i8], %struct.CallInfo* }
 %union.GCUnion = type { %struct.lua_State }
 %struct.LexState = type { i32, i32, i32, %struct.Token, %struct.Token, %struct.FuncState*, %struct.lua_State*, %struct.Zio*, %struct.Mbuffer*, %struct.Table*, %struct.Dyndata*, %struct.TString*, %struct.TString* }
 %struct.Token = type { i32, %union.SemInfo }
 %union.SemInfo = type { double }
-%struct.FuncState = type { %struct.Proto*, %struct.FuncState*, %struct.LexState*, %struct.BlockCnt*, i32, i32, i32, i32, i32, i32, i16, i8, i8, i8 }
-%struct.Proto = type { %struct.GCObject*, i8, i8, i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, %struct.lua_TValue*, i32*, %struct.Proto**, i32*, %struct.LocVar*, %struct.Upvaldesc*, %struct.LClosure*, %struct.TString*, %struct.GCObject* }
-%struct.LocVar = type { %struct.TString*, i32, i32 }
+%struct.FuncState = type { %struct.Proto*, %struct.FuncState*, %struct.LexState*, %struct.BlockCnt*, i32, i32, i32, i32, i32, i32, i32, i32, i16, i8, i8, i8, i8, i8 }
+%struct.Proto = type { %struct.GCObject*, i8, i8, i8, i8, i8, i32, i32, i32, i32, i32, i32, i32, i32, i32, %struct.TValue*, i32*, %struct.Proto**, %struct.Upvaldesc*, i8*, %struct.AbsLineInfo*, %struct.LocVar*, %struct.TString*, %struct.GCObject* }
 %struct.Upvaldesc = type { %struct.TString*, i8, i8 }
-%struct.LClosure = type { %struct.GCObject*, i8, i8, i8, %struct.GCObject*, %struct.Proto*, [1 x %struct.UpVal*] }
+%struct.AbsLineInfo = type { i32, i32 }
+%struct.LocVar = type { %struct.TString*, i32, i32 }
 %struct.BlockCnt = type opaque
 %struct.Zio = type { i64, i8*, i8* (%struct.lua_State*, i8*, i64*)*, i8*, %struct.lua_State* }
 %struct.Mbuffer = type { i8*, i64, i64 }
-%struct.Dyndata = type { %struct.anon.3, %struct.Labellist, %struct.Labellist }
-%struct.anon.3 = type { %struct.Vardesc*, i32, i32 }
+%struct.Dyndata = type { %struct.anon.6, %struct.Labellist, %struct.Labellist }
+%struct.anon.6 = type { %struct.Vardesc*, i32, i32 }
 %struct.Vardesc = type { i16 }
 %struct.Labellist = type { %struct.Labeldesc*, i32, i32 }
-%struct.Labeldesc = type { %struct.TString*, i32, i32, i8 }
+%struct.Labeldesc = type { %struct.TString*, i32, i32, i8, i8 }
 
 @.str = private unnamed_addr constant [5 x i8] c"_ENV\00", align 1
-@luaX_tokens = internal constant [37 x i8*] [i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.3, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.4, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.8, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.9, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.10, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.11, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.12, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.13, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.14, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.15, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.16, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.17, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.18, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.19, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.20, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.22, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.23, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.24, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.25, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.26, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.27, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.28, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.29, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.30, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.31, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.32, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.33, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.34, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.35, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.36, i32 0, i32 0), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.37, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.38, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.39, i32 0, i32 0)], align 16
-@.str.1 = private unnamed_addr constant [5 x i8] c"'%c'\00", align 1
-@.str.2 = private unnamed_addr constant [5 x i8] c"'%s'\00", align 1
-@.str.3 = private unnamed_addr constant [4 x i8] c"and\00", align 1
-@.str.4 = private unnamed_addr constant [6 x i8] c"break\00", align 1
-@.str.5 = private unnamed_addr constant [3 x i8] c"do\00", align 1
-@.str.6 = private unnamed_addr constant [5 x i8] c"else\00", align 1
-@.str.7 = private unnamed_addr constant [7 x i8] c"elseif\00", align 1
-@.str.8 = private unnamed_addr constant [4 x i8] c"end\00", align 1
-@.str.9 = private unnamed_addr constant [6 x i8] c"false\00", align 1
-@.str.10 = private unnamed_addr constant [4 x i8] c"for\00", align 1
-@.str.11 = private unnamed_addr constant [9 x i8] c"function\00", align 1
-@.str.12 = private unnamed_addr constant [5 x i8] c"goto\00", align 1
-@.str.13 = private unnamed_addr constant [3 x i8] c"if\00", align 1
-@.str.14 = private unnamed_addr constant [3 x i8] c"in\00", align 1
-@.str.15 = private unnamed_addr constant [6 x i8] c"local\00", align 1
-@.str.16 = private unnamed_addr constant [4 x i8] c"nil\00", align 1
-@.str.17 = private unnamed_addr constant [4 x i8] c"not\00", align 1
-@.str.18 = private unnamed_addr constant [3 x i8] c"or\00", align 1
-@.str.19 = private unnamed_addr constant [7 x i8] c"repeat\00", align 1
-@.str.20 = private unnamed_addr constant [7 x i8] c"return\00", align 1
-@.str.21 = private unnamed_addr constant [5 x i8] c"then\00", align 1
-@.str.22 = private unnamed_addr constant [5 x i8] c"true\00", align 1
-@.str.23 = private unnamed_addr constant [6 x i8] c"until\00", align 1
-@.str.24 = private unnamed_addr constant [6 x i8] c"while\00", align 1
-@.str.25 = private unnamed_addr constant [3 x i8] c"//\00", align 1
-@.str.26 = private unnamed_addr constant [3 x i8] c"..\00", align 1
-@.str.27 = private unnamed_addr constant [4 x i8] c"...\00", align 1
-@.str.28 = private unnamed_addr constant [3 x i8] c"==\00", align 1
-@.str.29 = private unnamed_addr constant [3 x i8] c">=\00", align 1
-@.str.30 = private unnamed_addr constant [3 x i8] c"<=\00", align 1
-@.str.31 = private unnamed_addr constant [3 x i8] c"~=\00", align 1
-@.str.32 = private unnamed_addr constant [3 x i8] c"<<\00", align 1
-@.str.33 = private unnamed_addr constant [3 x i8] c">>\00", align 1
-@.str.34 = private unnamed_addr constant [3 x i8] c"::\00", align 1
-@.str.35 = private unnamed_addr constant [6 x i8] c"<eof>\00", align 1
-@.str.36 = private unnamed_addr constant [9 x i8] c"<number>\00", align 1
-@.str.37 = private unnamed_addr constant [10 x i8] c"<integer>\00", align 1
-@.str.38 = private unnamed_addr constant [7 x i8] c"<name>\00", align 1
-@.str.39 = private unnamed_addr constant [9 x i8] c"<string>\00", align 1
-@.str.40 = private unnamed_addr constant [11 x i8] c"%s near %s\00", align 1
-@.str.41 = private unnamed_addr constant [25 x i8] c"lexical element too long\00", align 1
-@.str.42 = private unnamed_addr constant [30 x i8] c"invalid long string delimiter\00", align 1
+@luaX_tokens = internal constant [37 x i8*] [i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.5, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.6, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.7, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.8, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.9, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.10, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.11, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.12, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.13, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.14, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.15, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.16, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.17, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.18, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.19, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.20, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.21, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.22, i32 0, i32 0), i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.23, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.24, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.25, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.26, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.27, i32 0, i32 0), i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.28, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.29, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.30, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.31, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.32, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.33, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.34, i32 0, i32 0), i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.35, i32 0, i32 0), i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.36, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.37, i32 0, i32 0), i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.38, i32 0, i32 0), i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.39, i32 0, i32 0), i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.40, i32 0, i32 0)], align 16
 @luai_ctype_ = external hidden constant [257 x i8], align 16
-@.str.43 = private unnamed_addr constant [25 x i8] c"chunk has too many lines\00", align 1
-@.str.44 = private unnamed_addr constant [7 x i8] c"string\00", align 1
-@.str.45 = private unnamed_addr constant [8 x i8] c"comment\00", align 1
-@.str.46 = private unnamed_addr constant [41 x i8] c"unfinished long %s (starting at line %d)\00", align 1
-@.str.47 = private unnamed_addr constant [18 x i8] c"unfinished string\00", align 1
-@.str.48 = private unnamed_addr constant [24 x i8] c"invalid escape sequence\00", align 1
-@.str.49 = private unnamed_addr constant [27 x i8] c"hexadecimal digit expected\00", align 1
-@.str.50 = private unnamed_addr constant [12 x i8] c"missing '{'\00", align 1
-@.str.51 = private unnamed_addr constant [22 x i8] c"UTF-8 value too large\00", align 1
-@.str.52 = private unnamed_addr constant [12 x i8] c"missing '}'\00", align 1
-@.str.53 = private unnamed_addr constant [25 x i8] c"decimal escape too large\00", align 1
-@.str.54 = private unnamed_addr constant [3 x i8] c"Ee\00", align 1
-@.str.55 = private unnamed_addr constant [3 x i8] c"xX\00", align 1
-@.str.56 = private unnamed_addr constant [3 x i8] c"Pp\00", align 1
-@.str.57 = private unnamed_addr constant [3 x i8] c"-+\00", align 1
-@.str.58 = private unnamed_addr constant [17 x i8] c"malformed number\00", align 1
+@.str.1 = private unnamed_addr constant [5 x i8] c"'%c'\00", align 1
+@.str.2 = private unnamed_addr constant [8 x i8] c"'<\5C%d>'\00", align 1
+@.str.3 = private unnamed_addr constant [5 x i8] c"'%s'\00", align 1
+@.str.4 = private unnamed_addr constant [4 x i8] c"and\00", align 1
+@.str.5 = private unnamed_addr constant [6 x i8] c"break\00", align 1
+@.str.6 = private unnamed_addr constant [3 x i8] c"do\00", align 1
+@.str.7 = private unnamed_addr constant [5 x i8] c"else\00", align 1
+@.str.8 = private unnamed_addr constant [7 x i8] c"elseif\00", align 1
+@.str.9 = private unnamed_addr constant [4 x i8] c"end\00", align 1
+@.str.10 = private unnamed_addr constant [6 x i8] c"false\00", align 1
+@.str.11 = private unnamed_addr constant [4 x i8] c"for\00", align 1
+@.str.12 = private unnamed_addr constant [9 x i8] c"function\00", align 1
+@.str.13 = private unnamed_addr constant [5 x i8] c"goto\00", align 1
+@.str.14 = private unnamed_addr constant [3 x i8] c"if\00", align 1
+@.str.15 = private unnamed_addr constant [3 x i8] c"in\00", align 1
+@.str.16 = private unnamed_addr constant [6 x i8] c"local\00", align 1
+@.str.17 = private unnamed_addr constant [4 x i8] c"nil\00", align 1
+@.str.18 = private unnamed_addr constant [4 x i8] c"not\00", align 1
+@.str.19 = private unnamed_addr constant [3 x i8] c"or\00", align 1
+@.str.20 = private unnamed_addr constant [7 x i8] c"repeat\00", align 1
+@.str.21 = private unnamed_addr constant [7 x i8] c"return\00", align 1
+@.str.22 = private unnamed_addr constant [5 x i8] c"then\00", align 1
+@.str.23 = private unnamed_addr constant [5 x i8] c"true\00", align 1
+@.str.24 = private unnamed_addr constant [6 x i8] c"until\00", align 1
+@.str.25 = private unnamed_addr constant [6 x i8] c"while\00", align 1
+@.str.26 = private unnamed_addr constant [3 x i8] c"//\00", align 1
+@.str.27 = private unnamed_addr constant [3 x i8] c"..\00", align 1
+@.str.28 = private unnamed_addr constant [4 x i8] c"...\00", align 1
+@.str.29 = private unnamed_addr constant [3 x i8] c"==\00", align 1
+@.str.30 = private unnamed_addr constant [3 x i8] c">=\00", align 1
+@.str.31 = private unnamed_addr constant [3 x i8] c"<=\00", align 1
+@.str.32 = private unnamed_addr constant [3 x i8] c"~=\00", align 1
+@.str.33 = private unnamed_addr constant [3 x i8] c"<<\00", align 1
+@.str.34 = private unnamed_addr constant [3 x i8] c">>\00", align 1
+@.str.35 = private unnamed_addr constant [3 x i8] c"::\00", align 1
+@.str.36 = private unnamed_addr constant [6 x i8] c"<eof>\00", align 1
+@.str.37 = private unnamed_addr constant [9 x i8] c"<number>\00", align 1
+@.str.38 = private unnamed_addr constant [10 x i8] c"<integer>\00", align 1
+@.str.39 = private unnamed_addr constant [7 x i8] c"<name>\00", align 1
+@.str.40 = private unnamed_addr constant [9 x i8] c"<string>\00", align 1
+@.str.41 = private unnamed_addr constant [11 x i8] c"%s near %s\00", align 1
+@.str.42 = private unnamed_addr constant [25 x i8] c"lexical element too long\00", align 1
+@.str.43 = private unnamed_addr constant [30 x i8] c"invalid long string delimiter\00", align 1
+@.str.44 = private unnamed_addr constant [25 x i8] c"chunk has too many lines\00", align 1
+@.str.45 = private unnamed_addr constant [7 x i8] c"string\00", align 1
+@.str.46 = private unnamed_addr constant [8 x i8] c"comment\00", align 1
+@.str.47 = private unnamed_addr constant [41 x i8] c"unfinished long %s (starting at line %d)\00", align 1
+@.str.48 = private unnamed_addr constant [18 x i8] c"unfinished string\00", align 1
+@.str.49 = private unnamed_addr constant [24 x i8] c"invalid escape sequence\00", align 1
+@.str.50 = private unnamed_addr constant [27 x i8] c"hexadecimal digit expected\00", align 1
+@.str.51 = private unnamed_addr constant [12 x i8] c"missing '{'\00", align 1
+@.str.52 = private unnamed_addr constant [22 x i8] c"UTF-8 value too large\00", align 1
+@.str.53 = private unnamed_addr constant [12 x i8] c"missing '}'\00", align 1
+@.str.54 = private unnamed_addr constant [25 x i8] c"decimal escape too large\00", align 1
+@.str.55 = private unnamed_addr constant [3 x i8] c"Ee\00", align 1
+@.str.56 = private unnamed_addr constant [3 x i8] c"xX\00", align 1
+@.str.57 = private unnamed_addr constant [3 x i8] c"Pp\00", align 1
+@.str.58 = private unnamed_addr constant [3 x i8] c"-+\00", align 1
+@.str.59 = private unnamed_addr constant [17 x i8] c"malformed number\00", align 1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define hidden void @luaX_init(%struct.lua_State*) #0 {
@@ -171,45 +175,65 @@ define hidden i8* @luaX_token2str(%struct.LexState*, i32) #0 {
   store i32 %1, i32* %5, align 4
   %7 = load i32, i32* %5, align 4
   %8 = icmp slt i32 %7, 257
-  br i1 %8, label %9, label %15
+  br i1 %8, label %9, label %30
 
 ; <label>:9:                                      ; preds = %2
-  %10 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %11 = getelementptr inbounds %struct.LexState, %struct.LexState* %10, i32 0, i32 6
-  %12 = load %struct.lua_State*, %struct.lua_State** %11, align 8
-  %13 = load i32, i32* %5, align 4
-  %14 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %12, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0), i32 %13)
-  store i8* %14, i8** %3, align 8
-  br label %31
+  %10 = load i32, i32* %5, align 4
+  %11 = add nsw i32 %10, 1
+  %12 = sext i32 %11 to i64
+  %13 = getelementptr inbounds [257 x i8], [257 x i8]* @luai_ctype_, i64 0, i64 %12
+  %14 = load i8, i8* %13, align 1
+  %15 = zext i8 %14 to i32
+  %16 = and i32 %15, 4
+  %17 = icmp ne i32 %16, 0
+  br i1 %17, label %18, label %24
 
-; <label>:15:                                     ; preds = %2
-  %16 = load i32, i32* %5, align 4
-  %17 = sub nsw i32 %16, 257
-  %18 = sext i32 %17 to i64
-  %19 = getelementptr inbounds [37 x i8*], [37 x i8*]* @luaX_tokens, i64 0, i64 %18
-  %20 = load i8*, i8** %19, align 8
-  store i8* %20, i8** %6, align 8
-  %21 = load i32, i32* %5, align 4
-  %22 = icmp slt i32 %21, 289
-  br i1 %22, label %23, label %29
+; <label>:18:                                     ; preds = %9
+  %19 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %20 = getelementptr inbounds %struct.LexState, %struct.LexState* %19, i32 0, i32 6
+  %21 = load %struct.lua_State*, %struct.lua_State** %20, align 8
+  %22 = load i32, i32* %5, align 4
+  %23 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %21, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0), i32 %22)
+  store i8* %23, i8** %3, align 8
+  br label %46
 
-; <label>:23:                                     ; preds = %15
-  %24 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %25 = getelementptr inbounds %struct.LexState, %struct.LexState* %24, i32 0, i32 6
-  %26 = load %struct.lua_State*, %struct.lua_State** %25, align 8
-  %27 = load i8*, i8** %6, align 8
-  %28 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %26, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.2, i32 0, i32 0), i8* %27)
-  store i8* %28, i8** %3, align 8
-  br label %31
+; <label>:24:                                     ; preds = %9
+  %25 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %26 = getelementptr inbounds %struct.LexState, %struct.LexState* %25, i32 0, i32 6
+  %27 = load %struct.lua_State*, %struct.lua_State** %26, align 8
+  %28 = load i32, i32* %5, align 4
+  %29 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %27, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.2, i32 0, i32 0), i32 %28)
+  store i8* %29, i8** %3, align 8
+  br label %46
 
-; <label>:29:                                     ; preds = %15
-  %30 = load i8*, i8** %6, align 8
-  store i8* %30, i8** %3, align 8
-  br label %31
+; <label>:30:                                     ; preds = %2
+  %31 = load i32, i32* %5, align 4
+  %32 = sub nsw i32 %31, 257
+  %33 = sext i32 %32 to i64
+  %34 = getelementptr inbounds [37 x i8*], [37 x i8*]* @luaX_tokens, i64 0, i64 %33
+  %35 = load i8*, i8** %34, align 8
+  store i8* %35, i8** %6, align 8
+  %36 = load i32, i32* %5, align 4
+  %37 = icmp slt i32 %36, 289
+  br i1 %37, label %38, label %44
 
-; <label>:31:                                     ; preds = %29, %23, %9
-  %32 = load i8*, i8** %3, align 8
-  ret i8* %32
+; <label>:38:                                     ; preds = %30
+  %39 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %40 = getelementptr inbounds %struct.LexState, %struct.LexState* %39, i32 0, i32 6
+  %41 = load %struct.lua_State*, %struct.lua_State** %40, align 8
+  %42 = load i8*, i8** %6, align 8
+  %43 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %41, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.3, i32 0, i32 0), i8* %42)
+  store i8* %43, i8** %3, align 8
+  br label %46
+
+; <label>:44:                                     ; preds = %30
+  %45 = load i8*, i8** %6, align 8
+  store i8* %45, i8** %3, align 8
+  br label %46
+
+; <label>:46:                                     ; preds = %44, %38, %24, %18
+  %47 = load i8*, i8** %3, align 8
+  ret i8* %47
 }
 
 declare hidden i8* @luaO_pushfstring(%struct.lua_State*, i8*, ...) #1
@@ -264,7 +288,7 @@ define internal void @lexerror(%struct.LexState*, i8*, i32) #2 {
   %25 = load %struct.LexState*, %struct.LexState** %4, align 8
   %26 = load i32, i32* %6, align 4
   %27 = call i8* @txtToken(%struct.LexState* %25, i32 %26)
-  %28 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %23, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.40, i32 0, i32 0), i8* %24, i8* %27)
+  %28 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %23, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.41, i32 0, i32 0), i8* %24, i8* %27)
   br label %29
 
 ; <label>:29:                                     ; preds = %20, %3
@@ -283,11 +307,11 @@ define hidden %struct.TString* @luaX_newstring(%struct.LexState*, i8*, i64) #0 {
   %5 = alloca i8*, align 8
   %6 = alloca i64, align 8
   %7 = alloca %struct.lua_State*, align 8
-  %8 = alloca %struct.lua_TValue*, align 8
+  %8 = alloca %struct.TValue*, align 8
   %9 = alloca %struct.TString*, align 8
-  %10 = alloca %struct.lua_TValue*, align 8
+  %10 = alloca %struct.TValue*, align 8
   %11 = alloca %struct.TString*, align 8
-  %12 = alloca %struct.lua_TValue*, align 8
+  %12 = alloca %struct.TValue*, align 8
   store %struct.LexState* %0, %struct.LexState** %4, align 8
   store i8* %1, i8** %5, align 8
   store i64 %2, i64* %6, align 8
@@ -301,96 +325,98 @@ define hidden %struct.TString* @luaX_newstring(%struct.LexState*, i8*, i64) #0 {
   %19 = call %struct.TString* @luaS_newlstr(%struct.lua_State* %16, i8* %17, i64 %18)
   store %struct.TString* %19, %struct.TString** %9, align 8
   %20 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  %21 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %20, i32 0, i32 5
-  %22 = load %struct.lua_TValue*, %struct.lua_TValue** %21, align 8
-  %23 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %22, i32 1
-  store %struct.lua_TValue* %23, %struct.lua_TValue** %21, align 8
-  store %struct.lua_TValue* %22, %struct.lua_TValue** %10, align 8
-  %24 = load %struct.TString*, %struct.TString** %9, align 8
-  store %struct.TString* %24, %struct.TString** %11, align 8
-  %25 = load %struct.TString*, %struct.TString** %11, align 8
-  %26 = bitcast %struct.TString* %25 to %union.GCUnion*
-  %27 = bitcast %union.GCUnion* %26 to %struct.GCObject*
-  %28 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  %29 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %28, i32 0, i32 0
-  %30 = bitcast %union.Value* %29 to %struct.GCObject**
-  store %struct.GCObject* %27, %struct.GCObject** %30, align 8
-  %31 = load %struct.TString*, %struct.TString** %11, align 8
-  %32 = getelementptr inbounds %struct.TString, %struct.TString* %31, i32 0, i32 1
-  %33 = load i8, i8* %32, align 8
-  %34 = zext i8 %33 to i32
-  %35 = or i32 %34, 64
-  %36 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  %37 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %36, i32 0, i32 1
-  store i32 %35, i32* %37, align 8
-  %38 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  %39 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %40 = getelementptr inbounds %struct.LexState, %struct.LexState* %39, i32 0, i32 9
-  %41 = load %struct.Table*, %struct.Table** %40, align 8
-  %42 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  %43 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %42, i32 0, i32 5
-  %44 = load %struct.lua_TValue*, %struct.lua_TValue** %43, align 8
-  %45 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %44, i64 -1
-  %46 = call %struct.lua_TValue* @luaH_set(%struct.lua_State* %38, %struct.Table* %41, %struct.lua_TValue* %45)
-  store %struct.lua_TValue* %46, %struct.lua_TValue** %8, align 8
-  %47 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %48 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %47, i32 0, i32 1
-  %49 = load i32, i32* %48, align 8
-  %50 = icmp eq i32 %49, 0
-  br i1 %50, label %51, label %67
+  %21 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %20, i32 0, i32 6
+  %22 = load %union.StackValue*, %union.StackValue** %21, align 8
+  %23 = getelementptr inbounds %union.StackValue, %union.StackValue* %22, i32 1
+  store %union.StackValue* %23, %union.StackValue** %21, align 8
+  %24 = bitcast %union.StackValue* %22 to %struct.TValue*
+  store %struct.TValue* %24, %struct.TValue** %10, align 8
+  %25 = load %struct.TString*, %struct.TString** %9, align 8
+  store %struct.TString* %25, %struct.TString** %11, align 8
+  %26 = load %struct.TString*, %struct.TString** %11, align 8
+  %27 = bitcast %struct.TString* %26 to %union.GCUnion*
+  %28 = bitcast %union.GCUnion* %27 to %struct.GCObject*
+  %29 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %30 = getelementptr inbounds %struct.TValue, %struct.TValue* %29, i32 0, i32 0
+  %31 = bitcast %union.Value* %30 to %struct.GCObject**
+  store %struct.GCObject* %28, %struct.GCObject** %31, align 8
+  %32 = load %struct.TString*, %struct.TString** %11, align 8
+  %33 = getelementptr inbounds %struct.TString, %struct.TString* %32, i32 0, i32 1
+  %34 = load i8, i8* %33, align 8
+  %35 = zext i8 %34 to i32
+  %36 = or i32 %35, 64
+  %37 = trunc i32 %36 to i8
+  %38 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %39 = getelementptr inbounds %struct.TValue, %struct.TValue* %38, i32 0, i32 1
+  store i8 %37, i8* %39, align 8
+  %40 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %41 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %42 = getelementptr inbounds %struct.LexState, %struct.LexState* %41, i32 0, i32 9
+  %43 = load %struct.Table*, %struct.Table** %42, align 8
+  %44 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %45 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %44, i32 0, i32 6
+  %46 = load %union.StackValue*, %union.StackValue** %45, align 8
+  %47 = getelementptr inbounds %union.StackValue, %union.StackValue* %46, i64 -1
+  %48 = bitcast %union.StackValue* %47 to %struct.TValue*
+  %49 = call %struct.TValue* @luaH_set(%struct.lua_State* %40, %struct.Table* %43, %struct.TValue* %48)
+  store %struct.TValue* %49, %struct.TValue** %8, align 8
+  %50 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %51 = getelementptr inbounds %struct.TValue, %struct.TValue* %50, i32 0, i32 1
+  %52 = load i8, i8* %51, align 8
+  %53 = zext i8 %52 to i32
+  %54 = and i32 %53, 15
+  %55 = icmp eq i32 %54, 0
+  br i1 %55, label %56, label %72
 
-; <label>:51:                                     ; preds = %3
-  %52 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  store %struct.lua_TValue* %52, %struct.lua_TValue** %12, align 8
-  %53 = load %struct.lua_TValue*, %struct.lua_TValue** %12, align 8
-  %54 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %53, i32 0, i32 0
-  %55 = bitcast %union.Value* %54 to i32*
-  store i32 1, i32* %55, align 8
-  %56 = load %struct.lua_TValue*, %struct.lua_TValue** %12, align 8
-  %57 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %56, i32 0, i32 1
-  store i32 1, i32* %57, align 8
-  %58 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  %59 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %58, i32 0, i32 6
-  %60 = load %struct.global_State*, %struct.global_State** %59, align 8
-  %61 = getelementptr inbounds %struct.global_State, %struct.global_State* %60, i32 0, i32 3
-  %62 = load i64, i64* %61, align 8
-  %63 = icmp sgt i64 %62, 0
-  br i1 %63, label %64, label %66
+; <label>:56:                                     ; preds = %3
+  %57 = load %struct.TValue*, %struct.TValue** %8, align 8
+  store %struct.TValue* %57, %struct.TValue** %12, align 8
+  %58 = load %struct.TValue*, %struct.TValue** %12, align 8
+  %59 = getelementptr inbounds %struct.TValue, %struct.TValue* %58, i32 0, i32 0
+  %60 = bitcast %union.Value* %59 to i32*
+  store i32 1, i32* %60, align 8
+  %61 = load %struct.TValue*, %struct.TValue** %12, align 8
+  %62 = getelementptr inbounds %struct.TValue, %struct.TValue* %61, i32 0, i32 1
+  store i8 1, i8* %62, align 8
+  %63 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %64 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %63, i32 0, i32 7
+  %65 = load %struct.global_State*, %struct.global_State** %64, align 8
+  %66 = getelementptr inbounds %struct.global_State, %struct.global_State* %65, i32 0, i32 3
+  %67 = load i64, i64* %66, align 8
+  %68 = icmp sgt i64 %67, 0
+  br i1 %68, label %69, label %71
 
-; <label>:64:                                     ; preds = %51
-  %65 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  call void @luaC_step(%struct.lua_State* %65)
-  br label %66
+; <label>:69:                                     ; preds = %56
+  %70 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  call void @luaC_step(%struct.lua_State* %70)
+  br label %71
 
-; <label>:66:                                     ; preds = %64, %51
-  br label %79
+; <label>:71:                                     ; preds = %69, %56
+  br label %81
 
-; <label>:67:                                     ; preds = %3
-  %68 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %69 = bitcast %struct.lua_TValue* %68 to i8*
-  %70 = getelementptr inbounds i8, i8* %69, i64 0
-  %71 = bitcast i8* %70 to %struct.Node*
-  %72 = getelementptr inbounds %struct.Node, %struct.Node* %71, i32 0, i32 1
-  %73 = bitcast %union.TKey* %72 to %struct.lua_TValue*
-  %74 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %73, i32 0, i32 0
-  %75 = bitcast %union.Value* %74 to %struct.GCObject**
-  %76 = load %struct.GCObject*, %struct.GCObject** %75, align 8
-  %77 = bitcast %struct.GCObject* %76 to %union.GCUnion*
-  %78 = bitcast %union.GCUnion* %77 to %struct.TString*
-  store %struct.TString* %78, %struct.TString** %9, align 8
-  br label %79
+; <label>:72:                                     ; preds = %3
+  %73 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %74 = bitcast %struct.TValue* %73 to %union.Node*
+  %75 = bitcast %union.Node* %74 to %struct.NodeKey*
+  %76 = getelementptr inbounds %struct.NodeKey, %struct.NodeKey* %75, i32 0, i32 4
+  %77 = bitcast %union.Value* %76 to %struct.GCObject**
+  %78 = load %struct.GCObject*, %struct.GCObject** %77, align 8
+  %79 = bitcast %struct.GCObject* %78 to %union.GCUnion*
+  %80 = bitcast %union.GCUnion* %79 to %struct.TString*
+  store %struct.TString* %80, %struct.TString** %9, align 8
+  br label %81
 
-; <label>:79:                                     ; preds = %67, %66
-  %80 = load %struct.lua_State*, %struct.lua_State** %7, align 8
-  %81 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %80, i32 0, i32 5
-  %82 = load %struct.lua_TValue*, %struct.lua_TValue** %81, align 8
-  %83 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %82, i32 -1
-  store %struct.lua_TValue* %83, %struct.lua_TValue** %81, align 8
-  %84 = load %struct.TString*, %struct.TString** %9, align 8
-  ret %struct.TString* %84
+; <label>:81:                                     ; preds = %72, %71
+  %82 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %83 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %82, i32 0, i32 6
+  %84 = load %union.StackValue*, %union.StackValue** %83, align 8
+  %85 = getelementptr inbounds %union.StackValue, %union.StackValue* %84, i32 -1
+  store %union.StackValue* %85, %union.StackValue** %83, align 8
+  %86 = load %struct.TString*, %struct.TString** %9, align 8
+  ret %struct.TString* %86
 }
 
-declare hidden %struct.lua_TValue* @luaH_set(%struct.lua_State*, %struct.Table*, %struct.lua_TValue*) #1
+declare hidden %struct.TValue* @luaH_set(%struct.lua_State*, %struct.Table*, %struct.TValue*) #1
 
 declare hidden void @luaC_step(%struct.lua_State*) #1
 
@@ -458,7 +484,7 @@ define hidden void @luaX_setinput(%struct.lua_State*, %struct.LexState*, %struct
   %50 = getelementptr inbounds %struct.Mbuffer, %struct.Mbuffer* %49, i32 0, i32 2
   %51 = load i64, i64* %50, align 8
   %52 = mul i64 %51, 1
-  %53 = call i8* @luaM_realloc_(%struct.lua_State* %41, i8* %46, i64 %52, i64 32)
+  %53 = call i8* @luaM_saferealloc_(%struct.lua_State* %41, i8* %46, i64 %52, i64 32)
   %54 = load %struct.LexState*, %struct.LexState** %7, align 8
   %55 = getelementptr inbounds %struct.LexState, %struct.LexState* %54, i32 0, i32 8
   %56 = load %struct.Mbuffer*, %struct.Mbuffer** %55, align 8
@@ -472,7 +498,7 @@ define hidden void @luaX_setinput(%struct.lua_State*, %struct.LexState*, %struct
   ret void
 }
 
-declare hidden i8* @luaM_realloc_(%struct.lua_State*, i8*, i64, i64) #1
+declare hidden i8* @luaM_saferealloc_(%struct.lua_State*, i8*, i64, i64) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define hidden void @luaX_next(%struct.LexState*) #0 {
@@ -823,7 +849,7 @@ define internal i32 @llex(%struct.LexState*, %union.SemInfo*) #0 {
 
 ; <label>:181:                                    ; preds = %178
   %182 = load %struct.LexState*, %struct.LexState** %4, align 8
-  call void @lexerror(%struct.LexState* %182, i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str.42, i32 0, i32 0), i32 293) #5
+  call void @lexerror(%struct.LexState* %182, i8* getelementptr inbounds ([30 x i8], [30 x i8]* @.str.43, i32 0, i32 0), i32 293) #5
   unreachable
 
 ; <label>:183:                                    ; preds = %178
@@ -1338,7 +1364,7 @@ define internal i32 @llex(%struct.LexState*, %union.SemInfo*) #0 {
   %517 = getelementptr inbounds %struct.TString, %struct.TString* %516, i32 0, i32 1
   %518 = load i8, i8* %517, align 8
   %519 = zext i8 %518 to i32
-  %520 = icmp eq i32 %519, 4
+  %520 = icmp eq i32 %519, 20
   br i1 %520, label %521, label %534
 
 ; <label>:521:                                    ; preds = %500
@@ -1462,7 +1488,7 @@ define internal i8* @txtToken(%struct.LexState*, i32) #0 {
   %14 = load %struct.Mbuffer*, %struct.Mbuffer** %13, align 8
   %15 = getelementptr inbounds %struct.Mbuffer, %struct.Mbuffer* %14, i32 0, i32 0
   %16 = load i8*, i8** %15, align 8
-  %17 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %11, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.2, i32 0, i32 0), i8* %16)
+  %17 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %11, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.3, i32 0, i32 0), i8* %16)
   store i8* %17, i8** %3, align 8
   br label %22
 
@@ -1512,7 +1538,7 @@ define internal void @save(%struct.LexState*, i32) #0 {
 
 ; <label>:23:                                     ; preds = %18
   %24 = load %struct.LexState*, %struct.LexState** %3, align 8
-  call void @lexerror(%struct.LexState* %24, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.41, i32 0, i32 0), i32 0) #5
+  call void @lexerror(%struct.LexState* %24, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.42, i32 0, i32 0), i32 0) #5
   unreachable
 
 ; <label>:25:                                     ; preds = %18
@@ -1533,7 +1559,7 @@ define internal void @save(%struct.LexState*, i32) #0 {
   %39 = mul i64 %38, 1
   %40 = load i64, i64* %6, align 8
   %41 = mul i64 %40, 1
-  %42 = call i8* @luaM_realloc_(%struct.lua_State* %32, i8* %35, i64 %39, i64 %41)
+  %42 = call i8* @luaM_saferealloc_(%struct.lua_State* %32, i8* %35, i64 %39, i64 %41)
   %43 = load %struct.Mbuffer*, %struct.Mbuffer** %5, align 8
   %44 = getelementptr inbounds %struct.Mbuffer, %struct.Mbuffer* %43, i32 0, i32 0
   store i8* %42, i8** %44, align 8
@@ -1671,7 +1697,7 @@ define internal void @inclinenumber(%struct.LexState*) #0 {
 
 ; <label>:79:                                     ; preds = %73
   %80 = load %struct.LexState*, %struct.LexState** %2, align 8
-  call void @lexerror(%struct.LexState* %80, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.43, i32 0, i32 0), i32 0) #5
+  call void @lexerror(%struct.LexState* %80, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.44, i32 0, i32 0), i32 0) #5
   unreachable
 
 ; <label>:81:                                     ; preds = %73
@@ -1900,14 +1926,14 @@ define internal void @read_long_string(%struct.LexState*, %union.SemInfo*, i64) 
   %59 = load %union.SemInfo*, %union.SemInfo** %5, align 8
   %60 = icmp ne %union.SemInfo* %59, null
   %61 = zext i1 %60 to i64
-  %62 = select i1 %60, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.44, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.45, i32 0, i32 0)
+  %62 = select i1 %60, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.45, i32 0, i32 0), i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.46, i32 0, i32 0)
   store i8* %62, i8** %8, align 8
   %63 = load %struct.LexState*, %struct.LexState** %4, align 8
   %64 = getelementptr inbounds %struct.LexState, %struct.LexState* %63, i32 0, i32 6
   %65 = load %struct.lua_State*, %struct.lua_State** %64, align 8
   %66 = load i8*, i8** %8, align 8
   %67 = load i32, i32* %7, align 4
-  %68 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %65, i8* getelementptr inbounds ([41 x i8], [41 x i8]* @.str.46, i32 0, i32 0), i8* %66, i32 %67)
+  %68 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %65, i8* getelementptr inbounds ([41 x i8], [41 x i8]* @.str.47, i32 0, i32 0), i8* %66, i32 %67)
   store i8* %68, i8** %9, align 8
   %69 = load %struct.LexState*, %struct.LexState** %4, align 8
   %70 = load i8*, i8** %9, align 8
@@ -2240,12 +2266,12 @@ define internal void @read_string(%struct.LexState*, i32, %union.SemInfo*) #0 {
 
 ; <label>:47:                                     ; preds = %43
   %48 = load %struct.LexState*, %struct.LexState** %4, align 8
-  call void @lexerror(%struct.LexState* %48, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.47, i32 0, i32 0), i32 289) #5
+  call void @lexerror(%struct.LexState* %48, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.48, i32 0, i32 0), i32 289) #5
   unreachable
 
 ; <label>:49:                                     ; preds = %43, %43
   %50 = load %struct.LexState*, %struct.LexState** %4, align 8
-  call void @lexerror(%struct.LexState* %50, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.47, i32 0, i32 0), i32 293) #5
+  call void @lexerror(%struct.LexState* %50, i8* getelementptr inbounds ([18 x i8], [18 x i8]* @.str.48, i32 0, i32 0), i32 293) #5
   unreachable
 
 ; <label>:51:                                     ; preds = %43
@@ -2495,7 +2521,7 @@ define internal void @read_string(%struct.LexState*, i32, %union.SemInfo*) #0 {
   %194 = load i8, i8* %193, align 1
   %195 = zext i8 %194 to i32
   %196 = and i32 %195, 2
-  call void @esccheck(%struct.LexState* %187, i32 %196, i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str.48, i32 0, i32 0))
+  call void @esccheck(%struct.LexState* %187, i32 %196, i8* getelementptr inbounds ([24 x i8], [24 x i8]* @.str.49, i32 0, i32 0))
   %197 = load %struct.LexState*, %struct.LexState** %4, align 8
   %198 = call i32 @readdecesc(%struct.LexState* %197)
   store i32 %198, i32* %7, align 4
@@ -2664,12 +2690,12 @@ define internal i32 @read_numeral(%struct.LexState*, %union.SemInfo*) #0 {
   %3 = alloca i32, align 4
   %4 = alloca %struct.LexState*, align 8
   %5 = alloca %union.SemInfo*, align 8
-  %6 = alloca %struct.lua_TValue, align 8
+  %6 = alloca %struct.TValue, align 8
   %7 = alloca i8*, align 8
   %8 = alloca i32, align 4
   store %struct.LexState* %0, %struct.LexState** %4, align 8
   store %union.SemInfo* %1, %union.SemInfo** %5, align 8
-  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.54, i32 0, i32 0), i8** %7, align 8
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.55, i32 0, i32 0), i8** %7, align 8
   %9 = load %struct.LexState*, %struct.LexState** %4, align 8
   %10 = getelementptr inbounds %struct.LexState, %struct.LexState* %9, i32 0, i32 0
   %11 = load i32, i32* %10, align 8
@@ -2719,12 +2745,12 @@ define internal i32 @read_numeral(%struct.LexState*, %union.SemInfo*) #0 {
 
 ; <label>:43:                                     ; preds = %37
   %44 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %45 = call i32 @check_next2(%struct.LexState* %44, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.55, i32 0, i32 0))
+  %45 = call i32 @check_next2(%struct.LexState* %44, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.56, i32 0, i32 0))
   %46 = icmp ne i32 %45, 0
   br i1 %46, label %47, label %48
 
 ; <label>:47:                                     ; preds = %43
-  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.56, i32 0, i32 0), i8** %7, align 8
+  store i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.57, i32 0, i32 0), i8** %7, align 8
   br label %48
 
 ; <label>:48:                                     ; preds = %47, %43, %37
@@ -2739,7 +2765,7 @@ define internal i32 @read_numeral(%struct.LexState*, %union.SemInfo*) #0 {
 
 ; <label>:54:                                     ; preds = %49
   %55 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %56 = call i32 @check_next2(%struct.LexState* %55, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.57, i32 0, i32 0))
+  %56 = call i32 @check_next2(%struct.LexState* %55, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.58, i32 0, i32 0))
   br label %57
 
 ; <label>:57:                                     ; preds = %54, %49
@@ -2857,50 +2883,106 @@ define internal i32 @read_numeral(%struct.LexState*, %union.SemInfo*) #0 {
 
 ; <label>:136:                                    ; preds = %133
   %137 = load %struct.LexState*, %struct.LexState** %4, align 8
-  call void @save(%struct.LexState* %137, i32 0)
-  %138 = load %struct.LexState*, %struct.LexState** %4, align 8
-  %139 = getelementptr inbounds %struct.LexState, %struct.LexState* %138, i32 0, i32 8
-  %140 = load %struct.Mbuffer*, %struct.Mbuffer** %139, align 8
-  %141 = getelementptr inbounds %struct.Mbuffer, %struct.Mbuffer* %140, i32 0, i32 0
-  %142 = load i8*, i8** %141, align 8
-  %143 = call i64 @luaO_str2num(i8* %142, %struct.lua_TValue* %6)
-  %144 = icmp eq i64 %143, 0
-  br i1 %144, label %145, label %147
-
-; <label>:145:                                    ; preds = %136
-  %146 = load %struct.LexState*, %struct.LexState** %4, align 8
-  call void @lexerror(%struct.LexState* %146, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.58, i32 0, i32 0), i32 290) #5
-  unreachable
+  %138 = getelementptr inbounds %struct.LexState, %struct.LexState* %137, i32 0, i32 0
+  %139 = load i32, i32* %138, align 8
+  %140 = add nsw i32 %139, 1
+  %141 = sext i32 %140 to i64
+  %142 = getelementptr inbounds [257 x i8], [257 x i8]* @luai_ctype_, i64 0, i64 %141
+  %143 = load i8, i8* %142, align 1
+  %144 = zext i8 %143 to i32
+  %145 = and i32 %144, 3
+  %146 = icmp ne i32 %145, 0
+  br i1 %146, label %147, label %177
 
 ; <label>:147:                                    ; preds = %136
-  %148 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %6, i32 0, i32 1
-  %149 = load i32, i32* %148, align 8
-  %150 = icmp eq i32 %149, 19
-  br i1 %150, label %151, label %157
+  %148 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %149 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %150 = getelementptr inbounds %struct.LexState, %struct.LexState* %149, i32 0, i32 0
+  %151 = load i32, i32* %150, align 8
+  call void @save(%struct.LexState* %148, i32 %151)
+  %152 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %153 = getelementptr inbounds %struct.LexState, %struct.LexState* %152, i32 0, i32 7
+  %154 = load %struct.Zio*, %struct.Zio** %153, align 8
+  %155 = getelementptr inbounds %struct.Zio, %struct.Zio* %154, i32 0, i32 0
+  %156 = load i64, i64* %155, align 8
+  %157 = add i64 %156, -1
+  store i64 %157, i64* %155, align 8
+  %158 = icmp ugt i64 %156, 0
+  br i1 %158, label %159, label %168
 
-; <label>:151:                                    ; preds = %147
-  %152 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %6, i32 0, i32 0
-  %153 = bitcast %union.Value* %152 to i64*
-  %154 = load i64, i64* %153, align 8
-  %155 = load %union.SemInfo*, %union.SemInfo** %5, align 8
-  %156 = bitcast %union.SemInfo* %155 to i64*
-  store i64 %154, i64* %156, align 8
+; <label>:159:                                    ; preds = %147
+  %160 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %161 = getelementptr inbounds %struct.LexState, %struct.LexState* %160, i32 0, i32 7
+  %162 = load %struct.Zio*, %struct.Zio** %161, align 8
+  %163 = getelementptr inbounds %struct.Zio, %struct.Zio* %162, i32 0, i32 1
+  %164 = load i8*, i8** %163, align 8
+  %165 = getelementptr inbounds i8, i8* %164, i32 1
+  store i8* %165, i8** %163, align 8
+  %166 = load i8, i8* %164, align 1
+  %167 = zext i8 %166 to i32
+  br label %173
+
+; <label>:168:                                    ; preds = %147
+  %169 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %170 = getelementptr inbounds %struct.LexState, %struct.LexState* %169, i32 0, i32 7
+  %171 = load %struct.Zio*, %struct.Zio** %170, align 8
+  %172 = call i32 @luaZ_fill(%struct.Zio* %171)
+  br label %173
+
+; <label>:173:                                    ; preds = %168, %159
+  %174 = phi i32 [ %167, %159 ], [ %172, %168 ]
+  %175 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %176 = getelementptr inbounds %struct.LexState, %struct.LexState* %175, i32 0, i32 0
+  store i32 %174, i32* %176, align 8
+  br label %177
+
+; <label>:177:                                    ; preds = %173, %136
+  %178 = load %struct.LexState*, %struct.LexState** %4, align 8
+  call void @save(%struct.LexState* %178, i32 0)
+  %179 = load %struct.LexState*, %struct.LexState** %4, align 8
+  %180 = getelementptr inbounds %struct.LexState, %struct.LexState* %179, i32 0, i32 8
+  %181 = load %struct.Mbuffer*, %struct.Mbuffer** %180, align 8
+  %182 = getelementptr inbounds %struct.Mbuffer, %struct.Mbuffer* %181, i32 0, i32 0
+  %183 = load i8*, i8** %182, align 8
+  %184 = call i64 @luaO_str2num(i8* %183, %struct.TValue* %6)
+  %185 = icmp eq i64 %184, 0
+  br i1 %185, label %186, label %188
+
+; <label>:186:                                    ; preds = %177
+  %187 = load %struct.LexState*, %struct.LexState** %4, align 8
+  call void @lexerror(%struct.LexState* %187, i8* getelementptr inbounds ([17 x i8], [17 x i8]* @.str.59, i32 0, i32 0), i32 290) #5
+  unreachable
+
+; <label>:188:                                    ; preds = %177
+  %189 = getelementptr inbounds %struct.TValue, %struct.TValue* %6, i32 0, i32 1
+  %190 = load i8, i8* %189, align 8
+  %191 = zext i8 %190 to i32
+  %192 = icmp eq i32 %191, 35
+  br i1 %192, label %193, label %199
+
+; <label>:193:                                    ; preds = %188
+  %194 = getelementptr inbounds %struct.TValue, %struct.TValue* %6, i32 0, i32 0
+  %195 = bitcast %union.Value* %194 to i64*
+  %196 = load i64, i64* %195, align 8
+  %197 = load %union.SemInfo*, %union.SemInfo** %5, align 8
+  %198 = bitcast %union.SemInfo* %197 to i64*
+  store i64 %196, i64* %198, align 8
   store i32 291, i32* %3, align 4
-  br label %163
+  br label %205
 
-; <label>:157:                                    ; preds = %147
-  %158 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %6, i32 0, i32 0
-  %159 = bitcast %union.Value* %158 to double*
-  %160 = load double, double* %159, align 8
-  %161 = load %union.SemInfo*, %union.SemInfo** %5, align 8
-  %162 = bitcast %union.SemInfo* %161 to double*
-  store double %160, double* %162, align 8
+; <label>:199:                                    ; preds = %188
+  %200 = getelementptr inbounds %struct.TValue, %struct.TValue* %6, i32 0, i32 0
+  %201 = bitcast %union.Value* %200 to double*
+  %202 = load double, double* %201, align 8
+  %203 = load %union.SemInfo*, %union.SemInfo** %5, align 8
+  %204 = bitcast %union.SemInfo* %203 to double*
+  store double %202, double* %204, align 8
   store i32 290, i32* %3, align 4
-  br label %163
+  br label %205
 
-; <label>:163:                                    ; preds = %157, %151
-  %164 = load i32, i32* %3, align 4
-  ret i32 %164
+; <label>:205:                                    ; preds = %199, %193
+  %206 = load i32, i32* %3, align 4
+  ret i32 %206
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
@@ -3131,7 +3213,7 @@ define internal i32 @readdecesc(%struct.LexState*) #0 {
   %63 = load i32, i32* %4, align 4
   %64 = icmp sle i32 %63, 255
   %65 = zext i1 %64 to i32
-  call void @esccheck(%struct.LexState* %62, i32 %65, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.53, i32 0, i32 0))
+  call void @esccheck(%struct.LexState* %62, i32 %65, i8* getelementptr inbounds ([25 x i8], [25 x i8]* @.str.54, i32 0, i32 0))
   %66 = load i32, i32* %3, align 4
   %67 = sext i32 %66 to i64
   %68 = load %struct.LexState*, %struct.LexState** %2, align 8
@@ -3198,7 +3280,7 @@ define internal i32 @gethexa(%struct.LexState*) #0 {
   %39 = load i8, i8* %38, align 1
   %40 = zext i8 %39 to i32
   %41 = and i32 %40, 16
-  call void @esccheck(%struct.LexState* %32, i32 %41, i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str.49, i32 0, i32 0))
+  call void @esccheck(%struct.LexState* %32, i32 %41, i8* getelementptr inbounds ([27 x i8], [27 x i8]* @.str.50, i32 0, i32 0))
   %42 = load %struct.LexState*, %struct.LexState** %2, align 8
   %43 = getelementptr inbounds %struct.LexState, %struct.LexState* %42, i32 0, i32 0
   %44 = load i32, i32* %43, align 8
@@ -3262,7 +3344,7 @@ define internal i64 @readutf8esc(%struct.LexState*) #0 {
   %37 = load i32, i32* %36, align 8
   %38 = icmp eq i32 %37, 123
   %39 = zext i1 %38 to i32
-  call void @esccheck(%struct.LexState* %34, i32 %39, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.50, i32 0, i32 0))
+  call void @esccheck(%struct.LexState* %34, i32 %39, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.51, i32 0, i32 0))
   %40 = load %struct.LexState*, %struct.LexState** %2, align 8
   %41 = call i32 @gethexa(%struct.LexState* %40)
   %42 = sext i32 %41 to i64
@@ -3325,20 +3407,20 @@ define internal i64 @readutf8esc(%struct.LexState*) #0 {
   %84 = load i32, i32* %4, align 4
   %85 = add nsw i32 %84, 1
   store i32 %85, i32* %4, align 4
-  %86 = load i64, i64* %3, align 8
-  %87 = shl i64 %86, 4
-  %88 = load %struct.LexState*, %struct.LexState** %2, align 8
-  %89 = getelementptr inbounds %struct.LexState, %struct.LexState* %88, i32 0, i32 0
-  %90 = load i32, i32* %89, align 8
-  %91 = call i32 @luaO_hexavalue(i32 %90)
-  %92 = sext i32 %91 to i64
-  %93 = add i64 %87, %92
-  store i64 %93, i64* %3, align 8
-  %94 = load %struct.LexState*, %struct.LexState** %2, align 8
-  %95 = load i64, i64* %3, align 8
-  %96 = icmp ule i64 %95, 1114111
-  %97 = zext i1 %96 to i32
-  call void @esccheck(%struct.LexState* %94, i32 %97, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.51, i32 0, i32 0))
+  %86 = load %struct.LexState*, %struct.LexState** %2, align 8
+  %87 = load i64, i64* %3, align 8
+  %88 = icmp ule i64 %87, 134217727
+  %89 = zext i1 %88 to i32
+  call void @esccheck(%struct.LexState* %86, i32 %89, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.52, i32 0, i32 0))
+  %90 = load i64, i64* %3, align 8
+  %91 = shl i64 %90, 4
+  %92 = load %struct.LexState*, %struct.LexState** %2, align 8
+  %93 = getelementptr inbounds %struct.LexState, %struct.LexState* %92, i32 0, i32 0
+  %94 = load i32, i32* %93, align 8
+  %95 = call i32 @luaO_hexavalue(i32 %94)
+  %96 = sext i32 %95 to i64
+  %97 = add i64 %91, %96
+  store i64 %97, i64* %3, align 8
   br label %43
 
 ; <label>:98:                                     ; preds = %69
@@ -3348,7 +3430,7 @@ define internal i64 @readutf8esc(%struct.LexState*) #0 {
   %102 = load i32, i32* %101, align 8
   %103 = icmp eq i32 %102, 125
   %104 = zext i1 %103 to i32
-  call void @esccheck(%struct.LexState* %99, i32 %104, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.52, i32 0, i32 0))
+  call void @esccheck(%struct.LexState* %99, i32 %104, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.53, i32 0, i32 0))
   %105 = load %struct.LexState*, %struct.LexState** %2, align 8
   %106 = getelementptr inbounds %struct.LexState, %struct.LexState* %105, i32 0, i32 7
   %107 = load %struct.Zio*, %struct.Zio** %106, align 8
@@ -3476,7 +3558,7 @@ define internal i32 @check_next2(%struct.LexState*, i8*) #0 {
   ret i32 %55
 }
 
-declare hidden i64 @luaO_str2num(i8*, %struct.lua_TValue*) #1
+declare hidden i64 @luaO_str2num(i8*, %struct.TValue*) #1
 
 attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }

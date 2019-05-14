@@ -7,7 +7,7 @@ target triple = "x86_64-pc-linux-gnu"
 %struct.lua_State = type opaque
 %struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
 %struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
-%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i32, i32, i32, i8, i8, i8, i8, [60 x i8], %struct.CallInfo* }
+%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i64, i32, i32, i32, i8, i8, i8, i8, i16, i16, [60 x i8], %struct.CallInfo* }
 %struct.CallInfo = type opaque
 
 @dblib = internal constant [17 x %struct.luaL_Reg] [%struct.luaL_Reg { i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str, i32 0, i32 0), i32 (%struct.lua_State*)* @db_debug }, %struct.luaL_Reg { i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.1, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getuservalue }, %struct.luaL_Reg { i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.2, i32 0, i32 0), i32 (%struct.lua_State*)* @db_gethook }, %struct.luaL_Reg { i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.3, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getinfo }, %struct.luaL_Reg { i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.4, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getlocal }, %struct.luaL_Reg { i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.5, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getregistry }, %struct.luaL_Reg { i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.6, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getmetatable }, %struct.luaL_Reg { i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.7, i32 0, i32 0), i32 (%struct.lua_State*)* @db_getupvalue }, %struct.luaL_Reg { i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.8, i32 0, i32 0), i32 (%struct.lua_State*)* @db_upvaluejoin }, %struct.luaL_Reg { i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.9, i32 0, i32 0), i32 (%struct.lua_State*)* @db_upvalueid }, %struct.luaL_Reg { i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.10, i32 0, i32 0), i32 (%struct.lua_State*)* @db_setuservalue }, %struct.luaL_Reg { i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.11, i32 0, i32 0), i32 (%struct.lua_State*)* @db_sethook }, %struct.luaL_Reg { i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.12, i32 0, i32 0), i32 (%struct.lua_State*)* @db_setlocal }, %struct.luaL_Reg { i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.13, i32 0, i32 0), i32 (%struct.lua_State*)* @db_setmetatable }, %struct.luaL_Reg { i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.14, i32 0, i32 0), i32 (%struct.lua_State*)* @db_setupvalue }, %struct.luaL_Reg { i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.15, i32 0, i32 0), i32 (%struct.lua_State*)* @db_traceback }, %struct.luaL_Reg zeroinitializer], align 16
@@ -43,7 +43,7 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.25 = private unnamed_addr constant [6 x i8] c"count\00", align 1
 @.str.26 = private unnamed_addr constant [10 x i8] c"tail call\00", align 1
 @.str.27 = private unnamed_addr constant [15 x i8] c"stack overflow\00", align 1
-@.str.28 = private unnamed_addr constant [7 x i8] c"flnStu\00", align 1
+@.str.28 = private unnamed_addr constant [8 x i8] c"flnSrtu\00", align 1
 @.str.29 = private unnamed_addr constant [4 x i8] c">%s\00", align 1
 @.str.30 = private unnamed_addr constant [15 x i8] c"invalid option\00", align 1
 @.str.31 = private unnamed_addr constant [7 x i8] c"source\00", align 1
@@ -57,22 +57,24 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.39 = private unnamed_addr constant [9 x i8] c"isvararg\00", align 1
 @.str.40 = private unnamed_addr constant [5 x i8] c"name\00", align 1
 @.str.41 = private unnamed_addr constant [9 x i8] c"namewhat\00", align 1
-@.str.42 = private unnamed_addr constant [11 x i8] c"istailcall\00", align 1
-@.str.43 = private unnamed_addr constant [12 x i8] c"activelines\00", align 1
-@.str.44 = private unnamed_addr constant [5 x i8] c"func\00", align 1
-@.str.45 = private unnamed_addr constant [19 x i8] c"level out of range\00", align 1
-@.str.46 = private unnamed_addr constant [22 x i8] c"Lua function expected\00", align 1
-@.str.47 = private unnamed_addr constant [22 x i8] c"invalid upvalue index\00", align 1
-@.str.48 = private unnamed_addr constant [2 x i8] c"k\00", align 1
-@.str.49 = private unnamed_addr constant [7 x i8] c"__mode\00", align 1
-@.str.50 = private unnamed_addr constant [22 x i8] c"nil or table expected\00", align 1
+@.str.42 = private unnamed_addr constant [10 x i8] c"ftransfer\00", align 1
+@.str.43 = private unnamed_addr constant [10 x i8] c"ntransfer\00", align 1
+@.str.44 = private unnamed_addr constant [11 x i8] c"istailcall\00", align 1
+@.str.45 = private unnamed_addr constant [12 x i8] c"activelines\00", align 1
+@.str.46 = private unnamed_addr constant [5 x i8] c"func\00", align 1
+@.str.47 = private unnamed_addr constant [19 x i8] c"level out of range\00", align 1
+@.str.48 = private unnamed_addr constant [22 x i8] c"Lua function expected\00", align 1
+@.str.49 = private unnamed_addr constant [22 x i8] c"invalid upvalue index\00", align 1
+@.str.50 = private unnamed_addr constant [2 x i8] c"k\00", align 1
+@.str.51 = private unnamed_addr constant [7 x i8] c"__mode\00", align 1
+@.str.52 = private unnamed_addr constant [13 x i8] c"nil or table\00", align 1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define i32 @luaopen_debug(%struct.lua_State*) #0 {
   %2 = alloca %struct.lua_State*, align 8
   store %struct.lua_State* %0, %struct.lua_State** %2, align 8
   %3 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @luaL_checkversion_(%struct.lua_State* %3, double 5.030000e+02, i64 136)
+  call void @luaL_checkversion_(%struct.lua_State* %3, double 5.040000e+02, i64 136)
   %4 = load %struct.lua_State*, %struct.lua_State** %2, align 8
   call void @lua_createtable(%struct.lua_State* %4, i32 0, i32 16)
   %5 = load %struct.lua_State*, %struct.lua_State** %2, align 8
@@ -145,25 +147,47 @@ define internal i32 @db_debug(%struct.lua_State*) #0 {
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i32 @db_getuservalue(%struct.lua_State*) #0 {
-  %2 = alloca %struct.lua_State*, align 8
-  store %struct.lua_State* %0, %struct.lua_State** %2, align 8
-  %3 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %4 = call i32 @lua_type(%struct.lua_State* %3, i32 1)
-  %5 = icmp ne i32 %4, 7
-  br i1 %5, label %6, label %8
+  %2 = alloca i32, align 4
+  %3 = alloca %struct.lua_State*, align 8
+  %4 = alloca i32, align 4
+  store %struct.lua_State* %0, %struct.lua_State** %3, align 8
+  %5 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %6 = call i64 @luaL_optinteger(%struct.lua_State* %5, i32 2, i64 1)
+  %7 = trunc i64 %6 to i32
+  store i32 %7, i32* %4, align 4
+  %8 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %9 = call i32 @lua_type(%struct.lua_State* %8, i32 1)
+  %10 = icmp ne i32 %9, 7
+  br i1 %10, label %11, label %13
 
-; <label>:6:                                      ; preds = %1
-  %7 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @lua_pushnil(%struct.lua_State* %7)
-  br label %11
+; <label>:11:                                     ; preds = %1
+  %12 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  call void @lua_pushnil(%struct.lua_State* %12)
+  br label %21
 
-; <label>:8:                                      ; preds = %1
-  %9 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %10 = call i32 @lua_getuservalue(%struct.lua_State* %9, i32 1)
-  br label %11
+; <label>:13:                                     ; preds = %1
+  %14 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %15 = load i32, i32* %4, align 4
+  %16 = call i32 @lua_getiuservalue(%struct.lua_State* %14, i32 1, i32 %15)
+  %17 = icmp ne i32 %16, -1
+  br i1 %17, label %18, label %20
 
-; <label>:11:                                     ; preds = %8, %6
-  ret i32 1
+; <label>:18:                                     ; preds = %13
+  %19 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  call void @lua_pushboolean(%struct.lua_State* %19, i32 1)
+  store i32 2, i32* %2, align 4
+  br label %22
+
+; <label>:20:                                     ; preds = %13
+  br label %21
+
+; <label>:21:                                     ; preds = %20, %11
+  store i32 1, i32* %2, align 4
+  br label %22
+
+; <label>:22:                                     ; preds = %21, %18
+  %23 = load i32, i32* %2, align 4
+  ret i32 %23
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
@@ -254,7 +278,7 @@ define internal i32 @db_getinfo(%struct.lua_State*) #0 {
   %10 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %11 = load i32, i32* %5, align 4
   %12 = add nsw i32 %11, 2
-  %13 = call i8* @luaL_optlstring(%struct.lua_State* %10, i32 %12, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.28, i32 0, i32 0), i64* null)
+  %13 = call i8* @luaL_optlstring(%struct.lua_State* %10, i32 %12, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.28, i32 0, i32 0), i64* null)
   store i8* %13, i8** %7, align 8
   %14 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %15 = load %struct.lua_State*, %struct.lua_State** %6, align 8
@@ -295,7 +319,7 @@ define internal i32 @db_getinfo(%struct.lua_State*) #0 {
   %40 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   call void @lua_pushnil(%struct.lua_State* %40)
   store i32 1, i32* %2, align 4
-  br label %133
+  br label %150
 
 ; <label>:41:                                     ; preds = %30
   br label %42
@@ -313,7 +337,7 @@ define internal i32 @db_getinfo(%struct.lua_State*) #0 {
   %50 = add nsw i32 %49, 2
   %51 = call i32 @luaL_argerror(%struct.lua_State* %48, i32 %50, i8* getelementptr inbounds ([15 x i8], [15 x i8]* @.str.30, i32 0, i32 0))
   store i32 %51, i32* %2, align 4
-  br label %133
+  br label %150
 
 ; <label>:52:                                     ; preds = %42
   %53 = load %struct.lua_State*, %struct.lua_State** %3, align 8
@@ -321,130 +345,153 @@ define internal i32 @db_getinfo(%struct.lua_State*) #0 {
   %54 = load i8*, i8** %7, align 8
   %55 = call i8* @strchr(i8* %54, i32 83) #3
   %56 = icmp ne i8* %55, null
-  br i1 %56, label %57, label %73
+  br i1 %56, label %57, label %77
 
 ; <label>:57:                                     ; preds = %52
   %58 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %59 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 4
   %60 = load i8*, i8** %59, align 8
-  call void @settabss(%struct.lua_State* %58, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.31, i32 0, i32 0), i8* %60)
-  %61 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %62 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 12
-  %63 = getelementptr inbounds [60 x i8], [60 x i8]* %62, i32 0, i32 0
-  call void @settabss(%struct.lua_State* %61, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.32, i32 0, i32 0), i8* %63)
+  %61 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 5
+  %62 = load i64, i64* %61, align 8
+  %63 = call i8* @lua_pushlstring(%struct.lua_State* %58, i8* %60, i64 %62)
   %64 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %65 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 6
-  %66 = load i32, i32* %65, align 4
-  call void @settabsi(%struct.lua_State* %64, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.33, i32 0, i32 0), i32 %66)
-  %67 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %68 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 7
-  %69 = load i32, i32* %68, align 8
-  call void @settabsi(%struct.lua_State* %67, i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.34, i32 0, i32 0), i32 %69)
-  %70 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %71 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 3
-  %72 = load i8*, i8** %71, align 8
-  call void @settabss(%struct.lua_State* %70, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.35, i32 0, i32 0), i8* %72)
-  br label %73
+  call void @lua_setfield(%struct.lua_State* %64, i32 -2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.31, i32 0, i32 0))
+  %65 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %66 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 15
+  %67 = getelementptr inbounds [60 x i8], [60 x i8]* %66, i32 0, i32 0
+  call void @settabss(%struct.lua_State* %65, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.32, i32 0, i32 0), i8* %67)
+  %68 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %69 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 7
+  %70 = load i32, i32* %69, align 4
+  call void @settabsi(%struct.lua_State* %68, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.33, i32 0, i32 0), i32 %70)
+  %71 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %72 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 8
+  %73 = load i32, i32* %72, align 8
+  call void @settabsi(%struct.lua_State* %71, i8* getelementptr inbounds ([16 x i8], [16 x i8]* @.str.34, i32 0, i32 0), i32 %73)
+  %74 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %75 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 3
+  %76 = load i8*, i8** %75, align 8
+  call void @settabss(%struct.lua_State* %74, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.35, i32 0, i32 0), i8* %76)
+  br label %77
 
-; <label>:73:                                     ; preds = %57, %52
-  %74 = load i8*, i8** %7, align 8
-  %75 = call i8* @strchr(i8* %74, i32 108) #3
-  %76 = icmp ne i8* %75, null
-  br i1 %76, label %77, label %81
+; <label>:77:                                     ; preds = %57, %52
+  %78 = load i8*, i8** %7, align 8
+  %79 = call i8* @strchr(i8* %78, i32 108) #3
+  %80 = icmp ne i8* %79, null
+  br i1 %80, label %81, label %85
 
-; <label>:77:                                     ; preds = %73
-  %78 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %79 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 5
-  %80 = load i32, i32* %79, align 8
-  call void @settabsi(%struct.lua_State* %78, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.36, i32 0, i32 0), i32 %80)
-  br label %81
+; <label>:81:                                     ; preds = %77
+  %82 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %83 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 6
+  %84 = load i32, i32* %83, align 8
+  call void @settabsi(%struct.lua_State* %82, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.36, i32 0, i32 0), i32 %84)
+  br label %85
 
-; <label>:81:                                     ; preds = %77, %73
-  %82 = load i8*, i8** %7, align 8
-  %83 = call i8* @strchr(i8* %82, i32 117) #3
-  %84 = icmp ne i8* %83, null
-  br i1 %84, label %85, label %98
+; <label>:85:                                     ; preds = %81, %77
+  %86 = load i8*, i8** %7, align 8
+  %87 = call i8* @strchr(i8* %86, i32 117) #3
+  %88 = icmp ne i8* %87, null
+  br i1 %88, label %89, label %102
 
-; <label>:85:                                     ; preds = %81
-  %86 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %87 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 8
-  %88 = load i8, i8* %87, align 4
-  %89 = zext i8 %88 to i32
-  call void @settabsi(%struct.lua_State* %86, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.37, i32 0, i32 0), i32 %89)
+; <label>:89:                                     ; preds = %85
   %90 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %91 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 9
-  %92 = load i8, i8* %91, align 1
+  %92 = load i8, i8* %91, align 4
   %93 = zext i8 %92 to i32
-  call void @settabsi(%struct.lua_State* %90, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.38, i32 0, i32 0), i32 %93)
+  call void @settabsi(%struct.lua_State* %90, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.37, i32 0, i32 0), i32 %93)
   %94 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %95 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 10
-  %96 = load i8, i8* %95, align 2
-  %97 = sext i8 %96 to i32
-  call void @settabsb(%struct.lua_State* %94, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.39, i32 0, i32 0), i32 %97)
-  br label %98
+  %96 = load i8, i8* %95, align 1
+  %97 = zext i8 %96 to i32
+  call void @settabsi(%struct.lua_State* %94, i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.38, i32 0, i32 0), i32 %97)
+  %98 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %99 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 11
+  %100 = load i8, i8* %99, align 2
+  %101 = sext i8 %100 to i32
+  call void @settabsb(%struct.lua_State* %98, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.39, i32 0, i32 0), i32 %101)
+  br label %102
 
-; <label>:98:                                     ; preds = %85, %81
-  %99 = load i8*, i8** %7, align 8
-  %100 = call i8* @strchr(i8* %99, i32 110) #3
-  %101 = icmp ne i8* %100, null
-  br i1 %101, label %102, label %109
+; <label>:102:                                    ; preds = %89, %85
+  %103 = load i8*, i8** %7, align 8
+  %104 = call i8* @strchr(i8* %103, i32 110) #3
+  %105 = icmp ne i8* %104, null
+  br i1 %105, label %106, label %113
 
-; <label>:102:                                    ; preds = %98
-  %103 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %104 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 1
-  %105 = load i8*, i8** %104, align 8
-  call void @settabss(%struct.lua_State* %103, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.40, i32 0, i32 0), i8* %105)
-  %106 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %107 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 2
-  %108 = load i8*, i8** %107, align 8
-  call void @settabss(%struct.lua_State* %106, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.41, i32 0, i32 0), i8* %108)
-  br label %109
+; <label>:106:                                    ; preds = %102
+  %107 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %108 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 1
+  %109 = load i8*, i8** %108, align 8
+  call void @settabss(%struct.lua_State* %107, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.40, i32 0, i32 0), i8* %109)
+  %110 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %111 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 2
+  %112 = load i8*, i8** %111, align 8
+  call void @settabss(%struct.lua_State* %110, i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.41, i32 0, i32 0), i8* %112)
+  br label %113
 
-; <label>:109:                                    ; preds = %102, %98
-  %110 = load i8*, i8** %7, align 8
-  %111 = call i8* @strchr(i8* %110, i32 116) #3
-  %112 = icmp ne i8* %111, null
-  br i1 %112, label %113, label %118
+; <label>:113:                                    ; preds = %106, %102
+  %114 = load i8*, i8** %7, align 8
+  %115 = call i8* @strchr(i8* %114, i32 114) #3
+  %116 = icmp ne i8* %115, null
+  br i1 %116, label %117, label %126
 
-; <label>:113:                                    ; preds = %109
-  %114 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %115 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 11
-  %116 = load i8, i8* %115, align 1
-  %117 = sext i8 %116 to i32
-  call void @settabsb(%struct.lua_State* %114, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.42, i32 0, i32 0), i32 %117)
-  br label %118
+; <label>:117:                                    ; preds = %113
+  %118 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %119 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 13
+  %120 = load i16, i16* %119, align 8
+  %121 = zext i16 %120 to i32
+  call void @settabsi(%struct.lua_State* %118, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.42, i32 0, i32 0), i32 %121)
+  %122 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %123 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 14
+  %124 = load i16, i16* %123, align 2
+  %125 = zext i16 %124 to i32
+  call void @settabsi(%struct.lua_State* %122, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.43, i32 0, i32 0), i32 %125)
+  br label %126
 
-; <label>:118:                                    ; preds = %113, %109
-  %119 = load i8*, i8** %7, align 8
-  %120 = call i8* @strchr(i8* %119, i32 76) #3
-  %121 = icmp ne i8* %120, null
-  br i1 %121, label %122, label %125
+; <label>:126:                                    ; preds = %117, %113
+  %127 = load i8*, i8** %7, align 8
+  %128 = call i8* @strchr(i8* %127, i32 116) #3
+  %129 = icmp ne i8* %128, null
+  br i1 %129, label %130, label %135
 
-; <label>:122:                                    ; preds = %118
-  %123 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %124 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  call void @treatstackoption(%struct.lua_State* %123, %struct.lua_State* %124, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.43, i32 0, i32 0))
-  br label %125
+; <label>:130:                                    ; preds = %126
+  %131 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %132 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %4, i32 0, i32 12
+  %133 = load i8, i8* %132, align 1
+  %134 = sext i8 %133 to i32
+  call void @settabsb(%struct.lua_State* %131, i8* getelementptr inbounds ([11 x i8], [11 x i8]* @.str.44, i32 0, i32 0), i32 %134)
+  br label %135
 
-; <label>:125:                                    ; preds = %122, %118
-  %126 = load i8*, i8** %7, align 8
-  %127 = call i8* @strchr(i8* %126, i32 102) #3
-  %128 = icmp ne i8* %127, null
-  br i1 %128, label %129, label %132
+; <label>:135:                                    ; preds = %130, %126
+  %136 = load i8*, i8** %7, align 8
+  %137 = call i8* @strchr(i8* %136, i32 76) #3
+  %138 = icmp ne i8* %137, null
+  br i1 %138, label %139, label %142
 
-; <label>:129:                                    ; preds = %125
-  %130 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %131 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  call void @treatstackoption(%struct.lua_State* %130, %struct.lua_State* %131, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.44, i32 0, i32 0))
-  br label %132
+; <label>:139:                                    ; preds = %135
+  %140 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %141 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  call void @treatstackoption(%struct.lua_State* %140, %struct.lua_State* %141, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.45, i32 0, i32 0))
+  br label %142
 
-; <label>:132:                                    ; preds = %129, %125
+; <label>:142:                                    ; preds = %139, %135
+  %143 = load i8*, i8** %7, align 8
+  %144 = call i8* @strchr(i8* %143, i32 102) #3
+  %145 = icmp ne i8* %144, null
+  br i1 %145, label %146, label %149
+
+; <label>:146:                                    ; preds = %142
+  %147 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %148 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  call void @treatstackoption(%struct.lua_State* %147, %struct.lua_State* %148, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.46, i32 0, i32 0))
+  br label %149
+
+; <label>:149:                                    ; preds = %146, %142
   store i32 1, i32* %2, align 4
-  br label %133
+  br label %150
 
-; <label>:133:                                    ; preds = %132, %47, %39
-  %134 = load i32, i32* %2, align 4
-  ret i32 %134
+; <label>:150:                                    ; preds = %149, %47, %39
+  %151 = load i32, i32* %2, align 4
+  ret i32 %151
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
@@ -504,7 +551,7 @@ define internal i32 @db_getlocal(%struct.lua_State*) #0 {
   %42 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %43 = load i32, i32* %4, align 4
   %44 = add nsw i32 %43, 1
-  %45 = call i32 @luaL_argerror(%struct.lua_State* %42, i32 %44, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.45, i32 0, i32 0))
+  %45 = call i32 @luaL_argerror(%struct.lua_State* %42, i32 %44, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.47, i32 0, i32 0))
   store i32 %45, i32* %2, align 4
   br label %63
 
@@ -600,7 +647,7 @@ define internal i32 @db_upvaluejoin(%struct.lua_State*) #0 {
 
 ; <label>:12:                                     ; preds = %1
   %13 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %14 = call i32 @luaL_argerror(%struct.lua_State* %13, i32 1, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.46, i32 0, i32 0))
+  %14 = call i32 @luaL_argerror(%struct.lua_State* %13, i32 1, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.48, i32 0, i32 0))
   %15 = icmp ne i32 %14, 0
   br label %16
 
@@ -614,7 +661,7 @@ define internal i32 @db_upvaluejoin(%struct.lua_State*) #0 {
 
 ; <label>:22:                                     ; preds = %16
   %23 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %24 = call i32 @luaL_argerror(%struct.lua_State* %23, i32 3, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.46, i32 0, i32 0))
+  %24 = call i32 @luaL_argerror(%struct.lua_State* %23, i32 3, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.48, i32 0, i32 0))
   %25 = icmp ne i32 %24, 0
   br label %26
 
@@ -647,15 +694,30 @@ define internal i32 @db_upvalueid(%struct.lua_State*) #0 {
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i32 @db_setuservalue(%struct.lua_State*) #0 {
   %2 = alloca %struct.lua_State*, align 8
+  %3 = alloca i32, align 4
   store %struct.lua_State* %0, %struct.lua_State** %2, align 8
-  %3 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @luaL_checktype(%struct.lua_State* %3, i32 1, i32 7)
   %4 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @luaL_checkany(%struct.lua_State* %4, i32 2)
-  %5 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @lua_settop(%struct.lua_State* %5, i32 2)
-  %6 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @lua_setuservalue(%struct.lua_State* %6, i32 1)
+  %5 = call i64 @luaL_optinteger(%struct.lua_State* %4, i32 3, i64 1)
+  %6 = trunc i64 %5 to i32
+  store i32 %6, i32* %3, align 4
+  %7 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @luaL_checktype(%struct.lua_State* %7, i32 1, i32 7)
+  %8 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @luaL_checkany(%struct.lua_State* %8, i32 2)
+  %9 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @lua_settop(%struct.lua_State* %9, i32 2)
+  %10 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  %11 = load i32, i32* %3, align 4
+  %12 = call i32 @lua_setiuservalue(%struct.lua_State* %10, i32 1, i32 %11)
+  %13 = icmp ne i32 %12, 0
+  br i1 %13, label %16, label %14
+
+; <label>:14:                                     ; preds = %1
+  %15 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @lua_pushnil(%struct.lua_State* %15)
+  br label %16
+
+; <label>:16:                                     ; preds = %14, %1
   ret i32 1
 }
 
@@ -726,9 +788,9 @@ define internal i32 @db_sethook(%struct.lua_State*) #0 {
   %43 = load %struct.lua_State*, %struct.lua_State** %2, align 8
   call void @lua_rawsetp(%struct.lua_State* %43, i32 -1001000, i8* bitcast (i32* @HOOKKEY to i8*))
   %44 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %45 = call i8* @lua_pushstring(%struct.lua_State* %44, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.48, i32 0, i32 0))
+  %45 = call i8* @lua_pushstring(%struct.lua_State* %44, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.50, i32 0, i32 0))
   %46 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @lua_setfield(%struct.lua_State* %46, i32 -2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.49, i32 0, i32 0))
+  call void @lua_setfield(%struct.lua_State* %46, i32 -2, i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.51, i32 0, i32 0))
   %47 = load %struct.lua_State*, %struct.lua_State** %2, align 8
   call void @lua_pushvalue(%struct.lua_State* %47, i32 -1)
   %48 = load %struct.lua_State*, %struct.lua_State** %2, align 8
@@ -794,7 +856,7 @@ define internal i32 @db_setlocal(%struct.lua_State*) #0 {
   %27 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %28 = load i32, i32* %4, align 4
   %29 = add nsw i32 %28, 1
-  %30 = call i32 @luaL_argerror(%struct.lua_State* %27, i32 %29, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.45, i32 0, i32 0))
+  %30 = call i32 @luaL_argerror(%struct.lua_State* %27, i32 %29, i8* getelementptr inbounds ([19 x i8], [19 x i8]* @.str.47, i32 0, i32 0))
   store i32 %30, i32* %2, align 4
   br label %53
 
@@ -857,7 +919,7 @@ define internal i32 @db_setmetatable(%struct.lua_State*) #0 {
 
 ; <label>:11:                                     ; preds = %8
   %12 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %13 = call i32 @luaL_argerror(%struct.lua_State* %12, i32 2, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.50, i32 0, i32 0))
+  %13 = call i32 @luaL_typeerror(%struct.lua_State* %12, i32 2, i8* getelementptr inbounds ([13 x i8], [13 x i8]* @.str.52, i32 0, i32 0))
   %14 = icmp ne i32 %13, 0
   br label %15
 
@@ -961,11 +1023,15 @@ declare i8* @lua_tolstring(%struct.lua_State*, i32, i64*) #1
 
 declare void @lua_settop(%struct.lua_State*, i32) #1
 
+declare i64 @luaL_optinteger(%struct.lua_State*, i32, i64) #1
+
 declare i32 @lua_type(%struct.lua_State*, i32) #1
 
 declare void @lua_pushnil(%struct.lua_State*) #1
 
-declare i32 @lua_getuservalue(%struct.lua_State*, i32) #1
+declare i32 @lua_getiuservalue(%struct.lua_State*, i32, i32) #1
+
+declare void @lua_pushboolean(%struct.lua_State*, i32) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal %struct.lua_State* @getthread(%struct.lua_State*, i32*) #0 {
@@ -1028,7 +1094,7 @@ define internal void @hookf(%struct.lua_State*, %struct.lua_Debug*) #0 {
   %19 = load i8*, i8** %18, align 8
   %20 = call i8* @lua_pushstring(%struct.lua_State* %13, i8* %19)
   %21 = load %struct.lua_Debug*, %struct.lua_Debug** %4, align 8
-  %22 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %21, i32 0, i32 5
+  %22 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %21, i32 0, i32 6
   %23 = load i32, i32* %22, align 8
   %24 = icmp sge i32 %23, 0
   br i1 %24, label %25, label %31
@@ -1036,7 +1102,7 @@ define internal void @hookf(%struct.lua_State*, %struct.lua_Debug*) #0 {
 ; <label>:25:                                     ; preds = %12
   %26 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %27 = load %struct.lua_Debug*, %struct.lua_Debug** %4, align 8
-  %28 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %27, i32 0, i32 5
+  %28 = getelementptr inbounds %struct.lua_Debug, %struct.lua_Debug* %27, i32 0, i32 6
   %29 = load i32, i32* %28, align 8
   %30 = sext i32 %29 to i64
   call void @lua_pushinteger(%struct.lua_State* %26, i64 %30)
@@ -1191,6 +1257,10 @@ declare i32 @luaL_argerror(%struct.lua_State*, i32, i8*) #1
 ; Function Attrs: nounwind readonly
 declare i8* @strchr(i8*, i32) #2
 
+declare i8* @lua_pushlstring(%struct.lua_State*, i8*, i64) #1
+
+declare void @lua_setfield(%struct.lua_State*, i32, i8*) #1
+
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal void @settabss(%struct.lua_State*, i8*, i8*) #0 {
   %4 = alloca %struct.lua_State*, align 8
@@ -1273,10 +1343,6 @@ define internal void @treatstackoption(%struct.lua_State*, %struct.lua_State*, i
   call void @lua_setfield(%struct.lua_State* %16, i32 -2, i8* %17)
   ret void
 }
-
-declare void @lua_setfield(%struct.lua_State*, i32, i8*) #1
-
-declare void @lua_pushboolean(%struct.lua_State*, i32) #1
 
 declare i8* @lua_getlocal(%struct.lua_State*, %struct.lua_Debug*, i32) #1
 
@@ -1378,7 +1444,7 @@ define internal i32 @checkupval(%struct.lua_State*, i32, i32) #0 {
 ; <label>:19:                                     ; preds = %3
   %20 = load %struct.lua_State*, %struct.lua_State** %4, align 8
   %21 = load i32, i32* %6, align 4
-  %22 = call i32 @luaL_argerror(%struct.lua_State* %20, i32 %21, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.47, i32 0, i32 0))
+  %22 = call i32 @luaL_argerror(%struct.lua_State* %20, i32 %21, i8* getelementptr inbounds ([22 x i8], [22 x i8]* @.str.49, i32 0, i32 0))
   %23 = icmp ne i32 %22, 0
   br label %24
 
@@ -1397,11 +1463,9 @@ declare void @lua_pushlightuserdata(%struct.lua_State*, i8*) #1
 
 declare i8* @lua_upvalueid(%struct.lua_State*, i32, i32) #1
 
-declare void @lua_setuservalue(%struct.lua_State*, i32) #1
+declare i32 @lua_setiuservalue(%struct.lua_State*, i32, i32) #1
 
 declare i8* @luaL_checklstring(%struct.lua_State*, i32, i64*) #1
-
-declare i64 @luaL_optinteger(%struct.lua_State*, i32, i64) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i32 @makemask(i8*, i32) #0 {
@@ -1471,6 +1535,8 @@ declare void @lua_rawset(%struct.lua_State*, i32) #1
 declare void @lua_sethook(%struct.lua_State*, void (%struct.lua_State*, %struct.lua_Debug*)*, i32, i32) #1
 
 declare i8* @lua_setlocal(%struct.lua_State*, %struct.lua_Debug*, i32) #1
+
+declare i32 @luaL_typeerror(%struct.lua_State*, i32, i8*) #1
 
 declare void @luaL_traceback(%struct.lua_State*, %struct.lua_State*, i8*, i32) #1
 

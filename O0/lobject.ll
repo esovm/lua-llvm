@@ -3,43 +3,45 @@ source_filename = "lobject.c"
 target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-pc-linux-gnu"
 
-%struct.lua_TValue = type { %union.Value, i32 }
-%union.Value = type { %struct.GCObject* }
-%struct.GCObject = type { %struct.GCObject*, i8, i8 }
-%struct.lua_State = type { %struct.GCObject*, i8, i8, i16, i8, %struct.lua_TValue*, %struct.global_State*, %struct.CallInfo*, i32*, %struct.lua_TValue*, %struct.lua_TValue*, %struct.UpVal*, %struct.GCObject*, %struct.lua_State*, %struct.lua_longjmp*, %struct.CallInfo, void (%struct.lua_State*, %struct.lua_Debug*)*, i64, i32, i32, i32, i16, i16, i32, i8 }
-%struct.global_State = type { i8* (i8*, i8*, i64, i64)*, i8*, i64, i64, i64, i64, %struct.stringtable, %struct.lua_TValue, i32, i8, i8, i8, i8, %struct.GCObject*, %struct.GCObject**, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.lua_State*, i32, i32, i32, i32 (%struct.lua_State*)*, %struct.lua_State*, double*, %struct.TString*, [24 x %struct.TString*], [9 x %struct.Table*], [53 x [2 x %struct.TString*]] }
+%struct.lua_State = type { %struct.GCObject*, i8, i8, i8, i8, i16, %union.StackValue*, %struct.global_State*, %struct.CallInfo*, i32*, %union.StackValue*, %union.StackValue*, %struct.UpVal*, %struct.GCObject*, %struct.lua_State*, %struct.lua_longjmp*, %struct.CallInfo, void (%struct.lua_State*, %struct.lua_Debug*)*, i64, i32, i32, i32, i32, i32 }
+%struct.global_State = type { i8* (i8*, i8*, i64, i64)*, i8*, i64, i64, i64, i64, %struct.stringtable, %struct.TValue, %struct.TValue, i32, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, %struct.GCObject*, %struct.GCObject**, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.GCObject*, %struct.lua_State*, i32 (%struct.lua_State*)*, %struct.lua_State*, %struct.TString*, [25 x %struct.TString*], [9 x %struct.Table*], [53 x [2 x %struct.TString*]], void (i8*, i8*, i32)*, i8* }
 %struct.stringtable = type { %struct.TString**, i32, i32 }
-%struct.TString = type { %struct.GCObject*, i8, i8, i8, i8, i32, %union.anon.1 }
-%union.anon.1 = type { i64 }
-%struct.Table = type { %struct.GCObject*, i8, i8, i8, i8, i32, %struct.lua_TValue*, %struct.Node*, %struct.Node*, %struct.Table*, %struct.GCObject* }
-%struct.Node = type { %struct.lua_TValue, %union.TKey }
-%union.TKey = type { %struct.anon.2 }
-%struct.anon.2 = type { %union.Value, i32, i32 }
-%struct.UpVal = type opaque
+%struct.TValue = type { %union.Value, i8 }
+%union.Value = type { %struct.GCObject* }
+%struct.TString = type { %struct.GCObject*, i8, i8, i8, i8, i32, %union.anon }
+%union.anon = type { i64 }
+%struct.Table = type { %struct.GCObject*, i8, i8, i8, i8, i32, %struct.TValue*, %union.Node*, %union.Node*, %struct.Table*, %struct.GCObject* }
+%union.Node = type { %struct.NodeKey }
+%struct.NodeKey = type { %union.Value, i8, i8, i32, %union.Value }
+%union.StackValue = type { %struct.TValue }
+%struct.UpVal = type { %struct.GCObject*, i8, i8, %struct.TValue*, %union.anon.4 }
+%union.anon.4 = type { %struct.anon.5 }
+%struct.anon.5 = type { %struct.UpVal*, %struct.UpVal** }
+%struct.GCObject = type { %struct.GCObject*, i8, i8 }
 %struct.lua_longjmp = type opaque
-%struct.CallInfo = type { %struct.lua_TValue*, %struct.lua_TValue*, %struct.CallInfo*, %struct.CallInfo*, %union.anon, i64, i16, i16 }
-%union.anon = type { %struct.anon.0 }
-%struct.anon.0 = type { i32 (%struct.lua_State*, i32, i64)*, i64, i64 }
-%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i32, i32, i32, i8, i8, i8, i8, [60 x i8], %struct.CallInfo* }
+%struct.CallInfo = type { %union.StackValue*, %union.StackValue*, %struct.CallInfo*, %struct.CallInfo*, %union.anon.0, %union.anon.2, i16, i16 }
+%union.anon.0 = type { %struct.anon.1 }
+%struct.anon.1 = type { i32 (%struct.lua_State*, i32, i64)*, i64, i64 }
+%union.anon.2 = type { i32 }
+%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i64, i32, i32, i32, i8, i8, i8, i8, i16, i16, [60 x i8], %struct.CallInfo* }
 %struct.lconv = type { i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8, i8 }
 %union.GCUnion = type { %struct.lua_State }
 %struct.__va_list_tag = type { i32, i32, i8*, i8* }
+%struct.BuffFS = type { %struct.lua_State*, i32, i32, [400 x i8] }
 
-@luaO_nilobject_ = hidden constant %struct.lua_TValue zeroinitializer, align 8
 @luaO_ceillog2.log_2 = internal constant [256 x i8] c"\00\01\02\02\03\03\03\03\04\04\04\04\04\04\04\04\05\05\05\05\05\05\05\05\05\05\05\05\05\05\05\05\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\06\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\07\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08\08", align 16
 @luai_ctype_ = external hidden constant [257 x i8], align 16
-@.str = private unnamed_addr constant [5 x i8] c"%lld\00", align 1
-@.str.1 = private unnamed_addr constant [6 x i8] c"%.14g\00", align 1
-@.str.2 = private unnamed_addr constant [12 x i8] c"-0123456789\00", align 1
-@.str.3 = private unnamed_addr constant [7 x i8] c"(null)\00", align 1
-@.str.4 = private unnamed_addr constant [6 x i8] c"<\5C%d>\00", align 1
-@.str.5 = private unnamed_addr constant [3 x i8] c"%p\00", align 1
-@.str.6 = private unnamed_addr constant [2 x i8] c"%\00", align 1
-@.str.7 = private unnamed_addr constant [43 x i8] c"invalid option '%%%c' to 'lua_pushfstring'\00", align 1
-@.str.8 = private unnamed_addr constant [4 x i8] c"...\00", align 1
-@.str.9 = private unnamed_addr constant [10 x i8] c"[string \22\00", align 1
-@.str.10 = private unnamed_addr constant [3 x i8] c"\22]\00", align 1
-@.str.11 = private unnamed_addr constant [6 x i8] c".xXnN\00", align 1
+@.str = private unnamed_addr constant [7 x i8] c"(null)\00", align 1
+@.str.1 = private unnamed_addr constant [3 x i8] c"%p\00", align 1
+@.str.2 = private unnamed_addr constant [2 x i8] c"%\00", align 1
+@.str.3 = private unnamed_addr constant [43 x i8] c"invalid option '%%%c' to 'lua_pushfstring'\00", align 1
+@.str.4 = private unnamed_addr constant [4 x i8] c"...\00", align 1
+@.str.5 = private unnamed_addr constant [10 x i8] c"[string \22\00", align 1
+@.str.6 = private unnamed_addr constant [3 x i8] c"\22]\00", align 1
+@.str.7 = private unnamed_addr constant [6 x i8] c".xXnN\00", align 1
+@.str.8 = private unnamed_addr constant [5 x i8] c"%lld\00", align 1
+@.str.9 = private unnamed_addr constant [6 x i8] c"%.14g\00", align 1
+@.str.10 = private unnamed_addr constant [12 x i8] c"-0123456789\00", align 1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define hidden i32 @luaO_int2fb(i32) #0 {
@@ -172,278 +174,340 @@ define hidden i32 @luaO_ceillog2(i32) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define hidden void @luaO_arith(%struct.lua_State*, i32, %struct.lua_TValue*, %struct.lua_TValue*, %struct.lua_TValue*) #0 {
-  %6 = alloca %struct.lua_State*, align 8
-  %7 = alloca i32, align 4
-  %8 = alloca %struct.lua_TValue*, align 8
-  %9 = alloca %struct.lua_TValue*, align 8
-  %10 = alloca %struct.lua_TValue*, align 8
-  %11 = alloca i64, align 8
+define hidden i32 @luaO_rawarith(%struct.lua_State*, i32, %struct.TValue*, %struct.TValue*, %struct.TValue*) #0 {
+  %6 = alloca i32, align 4
+  %7 = alloca %struct.lua_State*, align 8
+  %8 = alloca i32, align 4
+  %9 = alloca %struct.TValue*, align 8
+  %10 = alloca %struct.TValue*, align 8
+  %11 = alloca %struct.TValue*, align 8
   %12 = alloca i64, align 8
-  %13 = alloca %struct.lua_TValue*, align 8
-  %14 = alloca double, align 8
+  %13 = alloca i64, align 8
+  %14 = alloca %struct.TValue*, align 8
   %15 = alloca double, align 8
-  %16 = alloca %struct.lua_TValue*, align 8
-  %17 = alloca double, align 8
+  %16 = alloca double, align 8
+  %17 = alloca %struct.TValue*, align 8
   %18 = alloca double, align 8
-  %19 = alloca %struct.lua_TValue*, align 8
-  %20 = alloca %struct.lua_TValue*, align 8
-  store %struct.lua_State* %0, %struct.lua_State** %6, align 8
-  store i32 %1, i32* %7, align 4
-  store %struct.lua_TValue* %2, %struct.lua_TValue** %8, align 8
-  store %struct.lua_TValue* %3, %struct.lua_TValue** %9, align 8
-  store %struct.lua_TValue* %4, %struct.lua_TValue** %10, align 8
-  %21 = load i32, i32* %7, align 4
-  switch i32 %21, label %104 [
-    i32 7, label %22
-    i32 8, label %22
-    i32 9, label %22
-    i32 10, label %22
-    i32 11, label %22
-    i32 13, label %22
-    i32 5, label %63
-    i32 4, label %63
+  %19 = alloca double, align 8
+  %20 = alloca %struct.TValue*, align 8
+  %21 = alloca %struct.TValue*, align 8
+  store %struct.lua_State* %0, %struct.lua_State** %7, align 8
+  store i32 %1, i32* %8, align 4
+  store %struct.TValue* %2, %struct.TValue** %9, align 8
+  store %struct.TValue* %3, %struct.TValue** %10, align 8
+  store %struct.TValue* %4, %struct.TValue** %11, align 8
+  %22 = load i32, i32* %8, align 4
+  switch i32 %22, label %127 [
+    i32 7, label %23
+    i32 8, label %23
+    i32 9, label %23
+    i32 10, label %23
+    i32 11, label %23
+    i32 13, label %23
+    i32 5, label %66
+    i32 4, label %66
   ]
 
-; <label>:22:                                     ; preds = %5, %5, %5, %5, %5, %5
-  %23 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %24 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %23, i32 0, i32 1
-  %25 = load i32, i32* %24, align 8
-  %26 = icmp eq i32 %25, 19
-  br i1 %26, label %27, label %32
+; <label>:23:                                     ; preds = %5, %5, %5, %5, %5, %5
+  %24 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %25 = getelementptr inbounds %struct.TValue, %struct.TValue* %24, i32 0, i32 1
+  %26 = load i8, i8* %25, align 8
+  %27 = zext i8 %26 to i32
+  %28 = icmp eq i32 %27, 35
+  br i1 %28, label %29, label %34
 
-; <label>:27:                                     ; preds = %22
-  %28 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %29 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %28, i32 0, i32 0
-  %30 = bitcast %union.Value* %29 to i64*
-  %31 = load i64, i64* %30, align 8
-  store i64 %31, i64* %11, align 8
-  br i1 true, label %36, label %62
+; <label>:29:                                     ; preds = %23
+  %30 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %31 = getelementptr inbounds %struct.TValue, %struct.TValue* %30, i32 0, i32 0
+  %32 = bitcast %union.Value* %31 to i64*
+  %33 = load i64, i64* %32, align 8
+  store i64 %33, i64* %12, align 8
+  br i1 true, label %38, label %65
 
-; <label>:32:                                     ; preds = %22
-  %33 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %34 = call i32 @luaV_tointeger(%struct.lua_TValue* %33, i64* %11, i32 0)
-  %35 = icmp ne i32 %34, 0
-  br i1 %35, label %36, label %62
+; <label>:34:                                     ; preds = %23
+  %35 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %36 = call i32 @luaV_tointegerns(%struct.TValue* %35, i64* %12, i32 0)
+  %37 = icmp ne i32 %36, 0
+  br i1 %37, label %38, label %65
 
-; <label>:36:                                     ; preds = %32, %27
-  %37 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %38 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %37, i32 0, i32 1
-  %39 = load i32, i32* %38, align 8
-  %40 = icmp eq i32 %39, 19
-  br i1 %40, label %41, label %46
+; <label>:38:                                     ; preds = %34, %29
+  %39 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %40 = getelementptr inbounds %struct.TValue, %struct.TValue* %39, i32 0, i32 1
+  %41 = load i8, i8* %40, align 8
+  %42 = zext i8 %41 to i32
+  %43 = icmp eq i32 %42, 35
+  br i1 %43, label %44, label %49
 
-; <label>:41:                                     ; preds = %36
-  %42 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %43 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %42, i32 0, i32 0
-  %44 = bitcast %union.Value* %43 to i64*
-  %45 = load i64, i64* %44, align 8
-  store i64 %45, i64* %12, align 8
-  br i1 true, label %50, label %62
+; <label>:44:                                     ; preds = %38
+  %45 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %46 = getelementptr inbounds %struct.TValue, %struct.TValue* %45, i32 0, i32 0
+  %47 = bitcast %union.Value* %46 to i64*
+  %48 = load i64, i64* %47, align 8
+  store i64 %48, i64* %13, align 8
+  br i1 true, label %53, label %65
 
-; <label>:46:                                     ; preds = %36
-  %47 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %48 = call i32 @luaV_tointeger(%struct.lua_TValue* %47, i64* %12, i32 0)
-  %49 = icmp ne i32 %48, 0
-  br i1 %49, label %50, label %62
+; <label>:49:                                     ; preds = %38
+  %50 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %51 = call i32 @luaV_tointegerns(%struct.TValue* %50, i64* %13, i32 0)
+  %52 = icmp ne i32 %51, 0
+  br i1 %52, label %53, label %65
 
-; <label>:50:                                     ; preds = %46, %41
-  %51 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  store %struct.lua_TValue* %51, %struct.lua_TValue** %13, align 8
-  %52 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %53 = load i32, i32* %7, align 4
-  %54 = load i64, i64* %11, align 8
-  %55 = load i64, i64* %12, align 8
-  %56 = call i64 @intarith(%struct.lua_State* %52, i32 %53, i64 %54, i64 %55)
-  %57 = load %struct.lua_TValue*, %struct.lua_TValue** %13, align 8
-  %58 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %57, i32 0, i32 0
-  %59 = bitcast %union.Value* %58 to i64*
-  store i64 %56, i64* %59, align 8
-  %60 = load %struct.lua_TValue*, %struct.lua_TValue** %13, align 8
-  %61 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %60, i32 0, i32 1
-  store i32 19, i32* %61, align 8
-  br label %181
+; <label>:53:                                     ; preds = %49, %44
+  %54 = load %struct.TValue*, %struct.TValue** %11, align 8
+  store %struct.TValue* %54, %struct.TValue** %14, align 8
+  %55 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %56 = load i32, i32* %8, align 4
+  %57 = load i64, i64* %12, align 8
+  %58 = load i64, i64* %13, align 8
+  %59 = call i64 @intarith(%struct.lua_State* %55, i32 %56, i64 %57, i64 %58)
+  %60 = load %struct.TValue*, %struct.TValue** %14, align 8
+  %61 = getelementptr inbounds %struct.TValue, %struct.TValue* %60, i32 0, i32 0
+  %62 = bitcast %union.Value* %61 to i64*
+  store i64 %59, i64* %62, align 8
+  %63 = load %struct.TValue*, %struct.TValue** %14, align 8
+  %64 = getelementptr inbounds %struct.TValue, %struct.TValue* %63, i32 0, i32 1
+  store i8 35, i8* %64, align 8
+  store i32 1, i32* %6, align 4
+  br label %218
 
-; <label>:62:                                     ; preds = %46, %41, %32, %27
-  br label %173
+; <label>:65:                                     ; preds = %49, %44, %34, %29
+  store i32 0, i32* %6, align 4
+  br label %218
 
-; <label>:63:                                     ; preds = %5, %5
-  %64 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %65 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %64, i32 0, i32 1
-  %66 = load i32, i32* %65, align 8
-  %67 = icmp eq i32 %66, 3
-  br i1 %67, label %68, label %73
+; <label>:66:                                     ; preds = %5, %5
+  %67 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %68 = getelementptr inbounds %struct.TValue, %struct.TValue* %67, i32 0, i32 1
+  %69 = load i8, i8* %68, align 8
+  %70 = zext i8 %69 to i32
+  %71 = icmp eq i32 %70, 19
+  br i1 %71, label %72, label %77
 
-; <label>:68:                                     ; preds = %63
-  %69 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %70 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %69, i32 0, i32 0
-  %71 = bitcast %union.Value* %70 to double*
-  %72 = load double, double* %71, align 8
-  store double %72, double* %14, align 8
-  br i1 true, label %77, label %103
+; <label>:72:                                     ; preds = %66
+  %73 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %74 = getelementptr inbounds %struct.TValue, %struct.TValue* %73, i32 0, i32 0
+  %75 = bitcast %union.Value* %74 to double*
+  %76 = load double, double* %75, align 8
+  store double %76, double* %15, align 8
+  br i1 true, label %90, label %126
 
-; <label>:73:                                     ; preds = %63
-  %74 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %75 = call i32 @luaV_tonumber_(%struct.lua_TValue* %74, double* %14)
-  %76 = icmp ne i32 %75, 0
-  br i1 %76, label %77, label %103
+; <label>:77:                                     ; preds = %66
+  %78 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %79 = getelementptr inbounds %struct.TValue, %struct.TValue* %78, i32 0, i32 1
+  %80 = load i8, i8* %79, align 8
+  %81 = zext i8 %80 to i32
+  %82 = icmp eq i32 %81, 35
+  br i1 %82, label %83, label %89
 
-; <label>:77:                                     ; preds = %73, %68
-  %78 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %79 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %78, i32 0, i32 1
-  %80 = load i32, i32* %79, align 8
-  %81 = icmp eq i32 %80, 3
-  br i1 %81, label %82, label %87
+; <label>:83:                                     ; preds = %77
+  %84 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %85 = getelementptr inbounds %struct.TValue, %struct.TValue* %84, i32 0, i32 0
+  %86 = bitcast %union.Value* %85 to i64*
+  %87 = load i64, i64* %86, align 8
+  %88 = sitofp i64 %87 to double
+  store double %88, double* %15, align 8
+  br i1 true, label %90, label %126
 
-; <label>:82:                                     ; preds = %77
-  %83 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %84 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %83, i32 0, i32 0
-  %85 = bitcast %union.Value* %84 to double*
-  %86 = load double, double* %85, align 8
-  store double %86, double* %15, align 8
-  br i1 true, label %91, label %103
+; <label>:89:                                     ; preds = %77
+  br i1 false, label %90, label %126
 
-; <label>:87:                                     ; preds = %77
-  %88 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %89 = call i32 @luaV_tonumber_(%struct.lua_TValue* %88, double* %15)
-  %90 = icmp ne i32 %89, 0
-  br i1 %90, label %91, label %103
+; <label>:90:                                     ; preds = %89, %83, %72
+  %91 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %92 = getelementptr inbounds %struct.TValue, %struct.TValue* %91, i32 0, i32 1
+  %93 = load i8, i8* %92, align 8
+  %94 = zext i8 %93 to i32
+  %95 = icmp eq i32 %94, 19
+  br i1 %95, label %96, label %101
 
-; <label>:91:                                     ; preds = %87, %82
-  %92 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  store %struct.lua_TValue* %92, %struct.lua_TValue** %16, align 8
-  %93 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %94 = load i32, i32* %7, align 4
-  %95 = load double, double* %14, align 8
-  %96 = load double, double* %15, align 8
-  %97 = call double @numarith(%struct.lua_State* %93, i32 %94, double %95, double %96)
-  %98 = load %struct.lua_TValue*, %struct.lua_TValue** %16, align 8
-  %99 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %98, i32 0, i32 0
-  %100 = bitcast %union.Value* %99 to double*
-  store double %97, double* %100, align 8
-  %101 = load %struct.lua_TValue*, %struct.lua_TValue** %16, align 8
-  %102 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %101, i32 0, i32 1
-  store i32 3, i32* %102, align 8
-  br label %181
+; <label>:96:                                     ; preds = %90
+  %97 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %98 = getelementptr inbounds %struct.TValue, %struct.TValue* %97, i32 0, i32 0
+  %99 = bitcast %union.Value* %98 to double*
+  %100 = load double, double* %99, align 8
+  store double %100, double* %16, align 8
+  br i1 true, label %114, label %126
 
-; <label>:103:                                    ; preds = %87, %82, %73, %68
-  br label %173
+; <label>:101:                                    ; preds = %90
+  %102 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %103 = getelementptr inbounds %struct.TValue, %struct.TValue* %102, i32 0, i32 1
+  %104 = load i8, i8* %103, align 8
+  %105 = zext i8 %104 to i32
+  %106 = icmp eq i32 %105, 35
+  br i1 %106, label %107, label %113
 
-; <label>:104:                                    ; preds = %5
-  %105 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %106 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %105, i32 0, i32 1
-  %107 = load i32, i32* %106, align 8
-  %108 = icmp eq i32 %107, 19
-  br i1 %108, label %109, label %132
+; <label>:107:                                    ; preds = %101
+  %108 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %109 = getelementptr inbounds %struct.TValue, %struct.TValue* %108, i32 0, i32 0
+  %110 = bitcast %union.Value* %109 to i64*
+  %111 = load i64, i64* %110, align 8
+  %112 = sitofp i64 %111 to double
+  store double %112, double* %16, align 8
+  br i1 true, label %114, label %126
 
-; <label>:109:                                    ; preds = %104
-  %110 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %111 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %110, i32 0, i32 1
-  %112 = load i32, i32* %111, align 8
-  %113 = icmp eq i32 %112, 19
-  br i1 %113, label %114, label %132
+; <label>:113:                                    ; preds = %101
+  br i1 false, label %114, label %126
 
-; <label>:114:                                    ; preds = %109
-  %115 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  store %struct.lua_TValue* %115, %struct.lua_TValue** %19, align 8
-  %116 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %117 = load i32, i32* %7, align 4
-  %118 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %119 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %118, i32 0, i32 0
-  %120 = bitcast %union.Value* %119 to i64*
-  %121 = load i64, i64* %120, align 8
-  %122 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %123 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %122, i32 0, i32 0
-  %124 = bitcast %union.Value* %123 to i64*
-  %125 = load i64, i64* %124, align 8
-  %126 = call i64 @intarith(%struct.lua_State* %116, i32 %117, i64 %121, i64 %125)
-  %127 = load %struct.lua_TValue*, %struct.lua_TValue** %19, align 8
-  %128 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %127, i32 0, i32 0
-  %129 = bitcast %union.Value* %128 to i64*
-  store i64 %126, i64* %129, align 8
-  %130 = load %struct.lua_TValue*, %struct.lua_TValue** %19, align 8
-  %131 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %130, i32 0, i32 1
-  store i32 19, i32* %131, align 8
-  br label %181
+; <label>:114:                                    ; preds = %113, %107, %96
+  %115 = load %struct.TValue*, %struct.TValue** %11, align 8
+  store %struct.TValue* %115, %struct.TValue** %17, align 8
+  %116 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %117 = load i32, i32* %8, align 4
+  %118 = load double, double* %15, align 8
+  %119 = load double, double* %16, align 8
+  %120 = call double @numarith(%struct.lua_State* %116, i32 %117, double %118, double %119)
+  %121 = load %struct.TValue*, %struct.TValue** %17, align 8
+  %122 = getelementptr inbounds %struct.TValue, %struct.TValue* %121, i32 0, i32 0
+  %123 = bitcast %union.Value* %122 to double*
+  store double %120, double* %123, align 8
+  %124 = load %struct.TValue*, %struct.TValue** %17, align 8
+  %125 = getelementptr inbounds %struct.TValue, %struct.TValue* %124, i32 0, i32 1
+  store i8 19, i8* %125, align 8
+  store i32 1, i32* %6, align 4
+  br label %218
 
-; <label>:132:                                    ; preds = %109, %104
-  %133 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %134 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %133, i32 0, i32 1
-  %135 = load i32, i32* %134, align 8
-  %136 = icmp eq i32 %135, 3
-  br i1 %136, label %137, label %142
+; <label>:126:                                    ; preds = %113, %107, %96, %89, %83, %72
+  store i32 0, i32* %6, align 4
+  br label %218
 
-; <label>:137:                                    ; preds = %132
-  %138 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %139 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %138, i32 0, i32 0
-  %140 = bitcast %union.Value* %139 to double*
-  %141 = load double, double* %140, align 8
-  store double %141, double* %17, align 8
-  br i1 true, label %146, label %172
+; <label>:127:                                    ; preds = %5
+  %128 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %129 = getelementptr inbounds %struct.TValue, %struct.TValue* %128, i32 0, i32 1
+  %130 = load i8, i8* %129, align 8
+  %131 = zext i8 %130 to i32
+  %132 = icmp eq i32 %131, 35
+  br i1 %132, label %133, label %157
 
-; <label>:142:                                    ; preds = %132
-  %143 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %144 = call i32 @luaV_tonumber_(%struct.lua_TValue* %143, double* %17)
-  %145 = icmp ne i32 %144, 0
-  br i1 %145, label %146, label %172
+; <label>:133:                                    ; preds = %127
+  %134 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %135 = getelementptr inbounds %struct.TValue, %struct.TValue* %134, i32 0, i32 1
+  %136 = load i8, i8* %135, align 8
+  %137 = zext i8 %136 to i32
+  %138 = icmp eq i32 %137, 35
+  br i1 %138, label %139, label %157
 
-; <label>:146:                                    ; preds = %142, %137
-  %147 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %148 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %147, i32 0, i32 1
-  %149 = load i32, i32* %148, align 8
-  %150 = icmp eq i32 %149, 3
-  br i1 %150, label %151, label %156
+; <label>:139:                                    ; preds = %133
+  %140 = load %struct.TValue*, %struct.TValue** %11, align 8
+  store %struct.TValue* %140, %struct.TValue** %20, align 8
+  %141 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %142 = load i32, i32* %8, align 4
+  %143 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %144 = getelementptr inbounds %struct.TValue, %struct.TValue* %143, i32 0, i32 0
+  %145 = bitcast %union.Value* %144 to i64*
+  %146 = load i64, i64* %145, align 8
+  %147 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %148 = getelementptr inbounds %struct.TValue, %struct.TValue* %147, i32 0, i32 0
+  %149 = bitcast %union.Value* %148 to i64*
+  %150 = load i64, i64* %149, align 8
+  %151 = call i64 @intarith(%struct.lua_State* %141, i32 %142, i64 %146, i64 %150)
+  %152 = load %struct.TValue*, %struct.TValue** %20, align 8
+  %153 = getelementptr inbounds %struct.TValue, %struct.TValue* %152, i32 0, i32 0
+  %154 = bitcast %union.Value* %153 to i64*
+  store i64 %151, i64* %154, align 8
+  %155 = load %struct.TValue*, %struct.TValue** %20, align 8
+  %156 = getelementptr inbounds %struct.TValue, %struct.TValue* %155, i32 0, i32 1
+  store i8 35, i8* %156, align 8
+  store i32 1, i32* %6, align 4
+  br label %218
 
-; <label>:151:                                    ; preds = %146
-  %152 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %153 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %152, i32 0, i32 0
-  %154 = bitcast %union.Value* %153 to double*
-  %155 = load double, double* %154, align 8
-  store double %155, double* %18, align 8
-  br i1 true, label %160, label %172
+; <label>:157:                                    ; preds = %133, %127
+  %158 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %159 = getelementptr inbounds %struct.TValue, %struct.TValue* %158, i32 0, i32 1
+  %160 = load i8, i8* %159, align 8
+  %161 = zext i8 %160 to i32
+  %162 = icmp eq i32 %161, 19
+  br i1 %162, label %163, label %168
 
-; <label>:156:                                    ; preds = %146
-  %157 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %158 = call i32 @luaV_tonumber_(%struct.lua_TValue* %157, double* %18)
-  %159 = icmp ne i32 %158, 0
-  br i1 %159, label %160, label %172
+; <label>:163:                                    ; preds = %157
+  %164 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %165 = getelementptr inbounds %struct.TValue, %struct.TValue* %164, i32 0, i32 0
+  %166 = bitcast %union.Value* %165 to double*
+  %167 = load double, double* %166, align 8
+  store double %167, double* %18, align 8
+  br i1 true, label %181, label %217
 
-; <label>:160:                                    ; preds = %156, %151
-  %161 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  store %struct.lua_TValue* %161, %struct.lua_TValue** %20, align 8
-  %162 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %163 = load i32, i32* %7, align 4
-  %164 = load double, double* %17, align 8
-  %165 = load double, double* %18, align 8
-  %166 = call double @numarith(%struct.lua_State* %162, i32 %163, double %164, double %165)
-  %167 = load %struct.lua_TValue*, %struct.lua_TValue** %20, align 8
-  %168 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %167, i32 0, i32 0
-  %169 = bitcast %union.Value* %168 to double*
-  store double %166, double* %169, align 8
-  %170 = load %struct.lua_TValue*, %struct.lua_TValue** %20, align 8
-  %171 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %170, i32 0, i32 1
-  store i32 3, i32* %171, align 8
-  br label %181
+; <label>:168:                                    ; preds = %157
+  %169 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %170 = getelementptr inbounds %struct.TValue, %struct.TValue* %169, i32 0, i32 1
+  %171 = load i8, i8* %170, align 8
+  %172 = zext i8 %171 to i32
+  %173 = icmp eq i32 %172, 35
+  br i1 %173, label %174, label %180
 
-; <label>:172:                                    ; preds = %156, %151, %142, %137
-  br label %173
+; <label>:174:                                    ; preds = %168
+  %175 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %176 = getelementptr inbounds %struct.TValue, %struct.TValue* %175, i32 0, i32 0
+  %177 = bitcast %union.Value* %176 to i64*
+  %178 = load i64, i64* %177, align 8
+  %179 = sitofp i64 %178 to double
+  store double %179, double* %18, align 8
+  br i1 true, label %181, label %217
 
-; <label>:173:                                    ; preds = %172, %103, %62
-  %174 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %175 = load %struct.lua_TValue*, %struct.lua_TValue** %8, align 8
-  %176 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %177 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  %178 = load i32, i32* %7, align 4
-  %179 = sub nsw i32 %178, 0
-  %180 = add nsw i32 %179, 6
-  call void @luaT_trybinTM(%struct.lua_State* %174, %struct.lua_TValue* %175, %struct.lua_TValue* %176, %struct.lua_TValue* %177, i32 %180)
-  br label %181
+; <label>:180:                                    ; preds = %168
+  br i1 false, label %181, label %217
 
-; <label>:181:                                    ; preds = %173, %160, %114, %91, %50
-  ret void
+; <label>:181:                                    ; preds = %180, %174, %163
+  %182 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %183 = getelementptr inbounds %struct.TValue, %struct.TValue* %182, i32 0, i32 1
+  %184 = load i8, i8* %183, align 8
+  %185 = zext i8 %184 to i32
+  %186 = icmp eq i32 %185, 19
+  br i1 %186, label %187, label %192
+
+; <label>:187:                                    ; preds = %181
+  %188 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %189 = getelementptr inbounds %struct.TValue, %struct.TValue* %188, i32 0, i32 0
+  %190 = bitcast %union.Value* %189 to double*
+  %191 = load double, double* %190, align 8
+  store double %191, double* %19, align 8
+  br i1 true, label %205, label %217
+
+; <label>:192:                                    ; preds = %181
+  %193 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %194 = getelementptr inbounds %struct.TValue, %struct.TValue* %193, i32 0, i32 1
+  %195 = load i8, i8* %194, align 8
+  %196 = zext i8 %195 to i32
+  %197 = icmp eq i32 %196, 35
+  br i1 %197, label %198, label %204
+
+; <label>:198:                                    ; preds = %192
+  %199 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %200 = getelementptr inbounds %struct.TValue, %struct.TValue* %199, i32 0, i32 0
+  %201 = bitcast %union.Value* %200 to i64*
+  %202 = load i64, i64* %201, align 8
+  %203 = sitofp i64 %202 to double
+  store double %203, double* %19, align 8
+  br i1 true, label %205, label %217
+
+; <label>:204:                                    ; preds = %192
+  br i1 false, label %205, label %217
+
+; <label>:205:                                    ; preds = %204, %198, %187
+  %206 = load %struct.TValue*, %struct.TValue** %11, align 8
+  store %struct.TValue* %206, %struct.TValue** %21, align 8
+  %207 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %208 = load i32, i32* %8, align 4
+  %209 = load double, double* %18, align 8
+  %210 = load double, double* %19, align 8
+  %211 = call double @numarith(%struct.lua_State* %207, i32 %208, double %209, double %210)
+  %212 = load %struct.TValue*, %struct.TValue** %21, align 8
+  %213 = getelementptr inbounds %struct.TValue, %struct.TValue* %212, i32 0, i32 0
+  %214 = bitcast %union.Value* %213 to double*
+  store double %211, double* %214, align 8
+  %215 = load %struct.TValue*, %struct.TValue** %21, align 8
+  %216 = getelementptr inbounds %struct.TValue, %struct.TValue* %215, i32 0, i32 1
+  store i8 19, i8* %216, align 8
+  store i32 1, i32* %6, align 4
+  br label %218
+
+; <label>:217:                                    ; preds = %204, %198, %187, %180, %174, %163
+  store i32 0, i32* %6, align 4
+  br label %218
+
+; <label>:218:                                    ; preds = %217, %205, %139, %126, %114, %65, %53
+  %219 = load i32, i32* %6, align 4
+  ret i32 %219
 }
 
-declare hidden i32 @luaV_tointeger(%struct.lua_TValue*, i64*, i32) #1
+declare hidden i32 @luaV_tointegerns(%struct.TValue*, i64*, i32) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i64 @intarith(%struct.lua_State*, i32, i64, i64) #0 {
@@ -505,7 +569,7 @@ define internal i64 @intarith(%struct.lua_State*, i32, i64, i64) #0 {
   %29 = load %struct.lua_State*, %struct.lua_State** %6, align 8
   %30 = load i64, i64* %8, align 8
   %31 = load i64, i64* %9, align 8
-  %32 = call i64 @luaV_div(%struct.lua_State* %29, i64 %30, i64 %31)
+  %32 = call i64 @luaV_idiv(%struct.lua_State* %29, i64 %30, i64 %31)
   store i64 %32, i64* %5, align 8
   br label %61
 
@@ -566,8 +630,6 @@ define internal i64 @intarith(%struct.lua_State*, i32, i64, i64) #0 {
   ret i64 %62
 }
 
-declare hidden i32 @luaV_tonumber_(%struct.lua_TValue*, double*) #1
-
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal double @numarith(%struct.lua_State*, i32, double, double) #0 {
   %5 = alloca double, align 8
@@ -575,107 +637,128 @@ define internal double @numarith(%struct.lua_State*, i32, double, double) #0 {
   %7 = alloca i32, align 4
   %8 = alloca double, align 8
   %9 = alloca double, align 8
-  %10 = alloca double, align 8
   store %struct.lua_State* %0, %struct.lua_State** %6, align 8
   store i32 %1, i32* %7, align 4
   store double %2, double* %8, align 8
   store double %3, double* %9, align 8
-  %11 = load i32, i32* %7, align 4
-  switch i32 %11, label %56 [
-    i32 0, label %12
-    i32 1, label %16
-    i32 2, label %20
-    i32 5, label %24
-    i32 4, label %28
-    i32 6, label %33
-    i32 12, label %39
-    i32 3, label %42
+  %10 = load i32, i32* %7, align 4
+  switch i32 %10, label %46 [
+    i32 0, label %11
+    i32 1, label %15
+    i32 2, label %19
+    i32 5, label %23
+    i32 4, label %27
+    i32 6, label %32
+    i32 12, label %38
+    i32 3, label %41
   ]
 
-; <label>:12:                                     ; preds = %4
-  %13 = load double, double* %8, align 8
-  %14 = load double, double* %9, align 8
-  %15 = fadd double %13, %14
-  store double %15, double* %5, align 8
-  br label %57
+; <label>:11:                                     ; preds = %4
+  %12 = load double, double* %8, align 8
+  %13 = load double, double* %9, align 8
+  %14 = fadd double %12, %13
+  store double %14, double* %5, align 8
+  br label %47
 
-; <label>:16:                                     ; preds = %4
-  %17 = load double, double* %8, align 8
-  %18 = load double, double* %9, align 8
-  %19 = fsub double %17, %18
-  store double %19, double* %5, align 8
-  br label %57
+; <label>:15:                                     ; preds = %4
+  %16 = load double, double* %8, align 8
+  %17 = load double, double* %9, align 8
+  %18 = fsub double %16, %17
+  store double %18, double* %5, align 8
+  br label %47
 
-; <label>:20:                                     ; preds = %4
-  %21 = load double, double* %8, align 8
-  %22 = load double, double* %9, align 8
-  %23 = fmul double %21, %22
-  store double %23, double* %5, align 8
-  br label %57
+; <label>:19:                                     ; preds = %4
+  %20 = load double, double* %8, align 8
+  %21 = load double, double* %9, align 8
+  %22 = fmul double %20, %21
+  store double %22, double* %5, align 8
+  br label %47
 
-; <label>:24:                                     ; preds = %4
-  %25 = load double, double* %8, align 8
-  %26 = load double, double* %9, align 8
-  %27 = fdiv double %25, %26
-  store double %27, double* %5, align 8
-  br label %57
+; <label>:23:                                     ; preds = %4
+  %24 = load double, double* %8, align 8
+  %25 = load double, double* %9, align 8
+  %26 = fdiv double %24, %25
+  store double %26, double* %5, align 8
+  br label %47
 
-; <label>:28:                                     ; preds = %4
-  %29 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %30 = load double, double* %8, align 8
-  %31 = load double, double* %9, align 8
-  %32 = call double @pow(double %30, double %31) #5
-  store double %32, double* %5, align 8
-  br label %57
+; <label>:27:                                     ; preds = %4
+  %28 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  %29 = load double, double* %8, align 8
+  %30 = load double, double* %9, align 8
+  %31 = call double @pow(double %29, double %30) #5
+  store double %31, double* %5, align 8
+  br label %47
 
-; <label>:33:                                     ; preds = %4
-  %34 = load %struct.lua_State*, %struct.lua_State** %6, align 8
-  %35 = load double, double* %8, align 8
-  %36 = load double, double* %9, align 8
-  %37 = fdiv double %35, %36
-  %38 = call double @llvm.floor.f64(double %37)
-  store double %38, double* %5, align 8
-  br label %57
+; <label>:32:                                     ; preds = %4
+  %33 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  %34 = load double, double* %8, align 8
+  %35 = load double, double* %9, align 8
+  %36 = fdiv double %34, %35
+  %37 = call double @llvm.floor.f64(double %36)
+  store double %37, double* %5, align 8
+  br label %47
 
-; <label>:39:                                     ; preds = %4
-  %40 = load double, double* %8, align 8
-  %41 = fsub double -0.000000e+00, %40
-  store double %41, double* %5, align 8
-  br label %57
+; <label>:38:                                     ; preds = %4
+  %39 = load double, double* %8, align 8
+  %40 = fsub double -0.000000e+00, %39
+  store double %40, double* %5, align 8
+  br label %47
 
-; <label>:42:                                     ; preds = %4
+; <label>:41:                                     ; preds = %4
+  %42 = load %struct.lua_State*, %struct.lua_State** %6, align 8
   %43 = load double, double* %8, align 8
   %44 = load double, double* %9, align 8
-  %45 = call double @fmod(double %43, double %44) #5
-  store double %45, double* %10, align 8
-  %46 = load double, double* %10, align 8
-  %47 = load double, double* %9, align 8
-  %48 = fmul double %46, %47
-  %49 = fcmp olt double %48, 0.000000e+00
-  br i1 %49, label %50, label %54
+  %45 = call double @luaV_modf(%struct.lua_State* %42, double %43, double %44)
+  store double %45, double* %5, align 8
+  br label %47
 
-; <label>:50:                                     ; preds = %42
-  %51 = load double, double* %9, align 8
-  %52 = load double, double* %10, align 8
-  %53 = fadd double %52, %51
-  store double %53, double* %10, align 8
-  br label %54
-
-; <label>:54:                                     ; preds = %50, %42
-  %55 = load double, double* %10, align 8
-  store double %55, double* %5, align 8
-  br label %57
-
-; <label>:56:                                     ; preds = %4
+; <label>:46:                                     ; preds = %4
   store double 0.000000e+00, double* %5, align 8
-  br label %57
+  br label %47
 
-; <label>:57:                                     ; preds = %56, %54, %39, %33, %28, %24, %20, %16, %12
-  %58 = load double, double* %5, align 8
-  ret double %58
+; <label>:47:                                     ; preds = %46, %41, %38, %32, %27, %23, %19, %15, %11
+  %48 = load double, double* %5, align 8
+  ret double %48
 }
 
-declare hidden void @luaT_trybinTM(%struct.lua_State*, %struct.lua_TValue*, %struct.lua_TValue*, %struct.lua_TValue*, i32) #1
+; Function Attrs: noinline nounwind optnone uwtable
+define hidden void @luaO_arith(%struct.lua_State*, i32, %struct.TValue*, %struct.TValue*, %union.StackValue*) #0 {
+  %6 = alloca %struct.lua_State*, align 8
+  %7 = alloca i32, align 4
+  %8 = alloca %struct.TValue*, align 8
+  %9 = alloca %struct.TValue*, align 8
+  %10 = alloca %union.StackValue*, align 8
+  store %struct.lua_State* %0, %struct.lua_State** %6, align 8
+  store i32 %1, i32* %7, align 4
+  store %struct.TValue* %2, %struct.TValue** %8, align 8
+  store %struct.TValue* %3, %struct.TValue** %9, align 8
+  store %union.StackValue* %4, %union.StackValue** %10, align 8
+  %11 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  %12 = load i32, i32* %7, align 4
+  %13 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %14 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %15 = load %union.StackValue*, %union.StackValue** %10, align 8
+  %16 = bitcast %union.StackValue* %15 to %struct.TValue*
+  %17 = call i32 @luaO_rawarith(%struct.lua_State* %11, i32 %12, %struct.TValue* %13, %struct.TValue* %14, %struct.TValue* %16)
+  %18 = icmp ne i32 %17, 0
+  br i1 %18, label %27, label %19
+
+; <label>:19:                                     ; preds = %5
+  %20 = load %struct.lua_State*, %struct.lua_State** %6, align 8
+  %21 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %22 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %23 = load %union.StackValue*, %union.StackValue** %10, align 8
+  %24 = load i32, i32* %7, align 4
+  %25 = sub nsw i32 %24, 0
+  %26 = add nsw i32 %25, 6
+  call void @luaT_trybinTM(%struct.lua_State* %20, %struct.TValue* %21, %struct.TValue* %22, %union.StackValue* %23, i32 %26)
+  br label %27
+
+; <label>:27:                                     ; preds = %19, %5
+  ret void
+}
+
+declare hidden void @luaT_trybinTM(%struct.lua_State*, %struct.TValue*, %struct.TValue*, %union.StackValue*, i32) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define hidden i32 @luaO_hexavalue(i32) #0 {
@@ -712,17 +795,17 @@ define hidden i32 @luaO_hexavalue(i32) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define hidden i64 @luaO_str2num(i8*, %struct.lua_TValue*) #0 {
+define hidden i64 @luaO_str2num(i8*, %struct.TValue*) #0 {
   %3 = alloca i64, align 8
   %4 = alloca i8*, align 8
-  %5 = alloca %struct.lua_TValue*, align 8
+  %5 = alloca %struct.TValue*, align 8
   %6 = alloca i64, align 8
   %7 = alloca double, align 8
   %8 = alloca i8*, align 8
-  %9 = alloca %struct.lua_TValue*, align 8
-  %10 = alloca %struct.lua_TValue*, align 8
+  %9 = alloca %struct.TValue*, align 8
+  %10 = alloca %struct.TValue*, align 8
   store i8* %0, i8** %4, align 8
-  store %struct.lua_TValue* %1, %struct.lua_TValue** %5, align 8
+  store %struct.TValue* %1, %struct.TValue** %5, align 8
   %11 = load i8*, i8** %4, align 8
   %12 = call i8* @l_str2int(i8* %11, i64* %6)
   store i8* %12, i8** %8, align 8
@@ -730,16 +813,16 @@ define hidden i64 @luaO_str2num(i8*, %struct.lua_TValue*) #0 {
   br i1 %13, label %14, label %22
 
 ; <label>:14:                                     ; preds = %2
-  %15 = load %struct.lua_TValue*, %struct.lua_TValue** %5, align 8
-  store %struct.lua_TValue* %15, %struct.lua_TValue** %9, align 8
+  %15 = load %struct.TValue*, %struct.TValue** %5, align 8
+  store %struct.TValue* %15, %struct.TValue** %9, align 8
   %16 = load i64, i64* %6, align 8
-  %17 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %18 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %17, i32 0, i32 0
+  %17 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %18 = getelementptr inbounds %struct.TValue, %struct.TValue* %17, i32 0, i32 0
   %19 = bitcast %union.Value* %18 to i64*
   store i64 %16, i64* %19, align 8
-  %20 = load %struct.lua_TValue*, %struct.lua_TValue** %9, align 8
-  %21 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %20, i32 0, i32 1
-  store i32 19, i32* %21, align 8
+  %20 = load %struct.TValue*, %struct.TValue** %9, align 8
+  %21 = getelementptr inbounds %struct.TValue, %struct.TValue* %20, i32 0, i32 1
+  store i8 35, i8* %21, align 8
   br label %36
 
 ; <label>:22:                                     ; preds = %2
@@ -750,16 +833,16 @@ define hidden i64 @luaO_str2num(i8*, %struct.lua_TValue*) #0 {
   br i1 %25, label %26, label %34
 
 ; <label>:26:                                     ; preds = %22
-  %27 = load %struct.lua_TValue*, %struct.lua_TValue** %5, align 8
-  store %struct.lua_TValue* %27, %struct.lua_TValue** %10, align 8
+  %27 = load %struct.TValue*, %struct.TValue** %5, align 8
+  store %struct.TValue* %27, %struct.TValue** %10, align 8
   %28 = load double, double* %7, align 8
-  %29 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  %30 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %29, i32 0, i32 0
+  %29 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %30 = getelementptr inbounds %struct.TValue, %struct.TValue* %29, i32 0, i32 0
   %31 = bitcast %union.Value* %30 to double*
   store double %28, double* %31, align 8
-  %32 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  %33 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %32, i32 0, i32 1
-  store i32 3, i32* %33, align 8
+  %32 = load %struct.TValue*, %struct.TValue** %10, align 8
+  %33 = getelementptr inbounds %struct.TValue, %struct.TValue* %32, i32 0, i32 1
+  store i8 19, i8* %33, align 8
   br label %35
 
 ; <label>:34:                                     ; preds = %22
@@ -1024,7 +1107,7 @@ define internal i8* @l_str2d(i8*, double*) #0 {
   store i8* %0, i8** %4, align 8
   store double* %1, double** %5, align 8
   %11 = load i8*, i8** %4, align 8
-  %12 = call i8* @strpbrk(i8* %11, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.11, i32 0, i32 0)) #8
+  %12 = call i8* @strpbrk(i8* %11, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.7, i32 0, i32 0)) #8
   store i8* %12, i8** %7, align 8
   %13 = load i8*, i8** %7, align 8
   %14 = icmp ne i8* %13, null
@@ -1203,104 +1286,115 @@ define hidden i32 @luaO_utf8esc(i8*, i64) #0 {
 }
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define hidden void @luaO_tostring(%struct.lua_State*, %struct.lua_TValue*) #0 {
+define hidden void @luaO_tostring(%struct.lua_State*, %struct.TValue*) #0 {
   %3 = alloca %struct.lua_State*, align 8
-  %4 = alloca %struct.lua_TValue*, align 8
+  %4 = alloca %struct.TValue*, align 8
   %5 = alloca [50 x i8], align 16
   %6 = alloca i64, align 8
-  %7 = alloca %struct.lua_TValue*, align 8
+  %7 = alloca %struct.TValue*, align 8
   %8 = alloca %struct.TString*, align 8
   store %struct.lua_State* %0, %struct.lua_State** %3, align 8
-  store %struct.lua_TValue* %1, %struct.lua_TValue** %4, align 8
-  %9 = load %struct.lua_TValue*, %struct.lua_TValue** %4, align 8
-  %10 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %9, i32 0, i32 1
-  %11 = load i32, i32* %10, align 8
-  %12 = icmp eq i32 %11, 19
-  br i1 %12, label %13, label %21
-
-; <label>:13:                                     ; preds = %2
+  store %struct.TValue* %1, %struct.TValue** %4, align 8
+  %9 = load %struct.TValue*, %struct.TValue** %4, align 8
+  %10 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i32 0, i32 0
+  %11 = call i64 @tostringbuff(%struct.TValue* %9, i8* %10)
+  store i64 %11, i64* %6, align 8
+  %12 = load %struct.TValue*, %struct.TValue** %4, align 8
+  store %struct.TValue* %12, %struct.TValue** %7, align 8
+  %13 = load %struct.lua_State*, %struct.lua_State** %3, align 8
   %14 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i32 0, i32 0
-  %15 = load %struct.lua_TValue*, %struct.lua_TValue** %4, align 8
-  %16 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %15, i32 0, i32 0
-  %17 = bitcast %union.Value* %16 to i64*
-  %18 = load i64, i64* %17, align 8
-  %19 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %14, i64 50, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str, i32 0, i32 0), i64 %18) #5
-  %20 = sext i32 %19 to i64
-  store i64 %20, i64* %6, align 8
-  br label %48
-
-; <label>:21:                                     ; preds = %2
-  %22 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i32 0, i32 0
-  %23 = load %struct.lua_TValue*, %struct.lua_TValue** %4, align 8
-  %24 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %23, i32 0, i32 0
-  %25 = bitcast %union.Value* %24 to double*
-  %26 = load double, double* %25, align 8
-  %27 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %22, i64 50, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.1, i32 0, i32 0), double %26) #5
-  %28 = sext i32 %27 to i64
-  store i64 %28, i64* %6, align 8
-  %29 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i32 0, i32 0
-  %30 = call i64 @strspn(i8* %29, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.2, i32 0, i32 0)) #8
-  %31 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i64 0, i64 %30
-  %32 = load i8, i8* %31, align 1
-  %33 = sext i8 %32 to i32
-  %34 = icmp eq i32 %33, 0
-  br i1 %34, label %35, label %47
-
-; <label>:35:                                     ; preds = %21
-  %36 = call %struct.lconv* @localeconv() #5
-  %37 = getelementptr inbounds %struct.lconv, %struct.lconv* %36, i32 0, i32 0
-  %38 = load i8*, i8** %37, align 8
-  %39 = getelementptr inbounds i8, i8* %38, i64 0
-  %40 = load i8, i8* %39, align 1
-  %41 = load i64, i64* %6, align 8
-  %42 = add i64 %41, 1
-  store i64 %42, i64* %6, align 8
-  %43 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i64 0, i64 %41
-  store i8 %40, i8* %43, align 1
-  %44 = load i64, i64* %6, align 8
-  %45 = add i64 %44, 1
-  store i64 %45, i64* %6, align 8
-  %46 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i64 0, i64 %44
-  store i8 48, i8* %46, align 1
-  br label %47
-
-; <label>:47:                                     ; preds = %35, %21
-  br label %48
-
-; <label>:48:                                     ; preds = %47, %13
-  %49 = load %struct.lua_TValue*, %struct.lua_TValue** %4, align 8
-  store %struct.lua_TValue* %49, %struct.lua_TValue** %7, align 8
-  %50 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %51 = getelementptr inbounds [50 x i8], [50 x i8]* %5, i32 0, i32 0
-  %52 = load i64, i64* %6, align 8
-  %53 = call %struct.TString* @luaS_newlstr(%struct.lua_State* %50, i8* %51, i64 %52)
-  store %struct.TString* %53, %struct.TString** %8, align 8
-  %54 = load %struct.TString*, %struct.TString** %8, align 8
-  %55 = bitcast %struct.TString* %54 to %union.GCUnion*
-  %56 = bitcast %union.GCUnion* %55 to %struct.GCObject*
-  %57 = load %struct.lua_TValue*, %struct.lua_TValue** %7, align 8
-  %58 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %57, i32 0, i32 0
-  %59 = bitcast %union.Value* %58 to %struct.GCObject**
-  store %struct.GCObject* %56, %struct.GCObject** %59, align 8
-  %60 = load %struct.TString*, %struct.TString** %8, align 8
-  %61 = getelementptr inbounds %struct.TString, %struct.TString* %60, i32 0, i32 1
-  %62 = load i8, i8* %61, align 8
-  %63 = zext i8 %62 to i32
-  %64 = or i32 %63, 64
-  %65 = load %struct.lua_TValue*, %struct.lua_TValue** %7, align 8
-  %66 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %65, i32 0, i32 1
-  store i32 %64, i32* %66, align 8
+  %15 = load i64, i64* %6, align 8
+  %16 = call %struct.TString* @luaS_newlstr(%struct.lua_State* %13, i8* %14, i64 %15)
+  store %struct.TString* %16, %struct.TString** %8, align 8
+  %17 = load %struct.TString*, %struct.TString** %8, align 8
+  %18 = bitcast %struct.TString* %17 to %union.GCUnion*
+  %19 = bitcast %union.GCUnion* %18 to %struct.GCObject*
+  %20 = load %struct.TValue*, %struct.TValue** %7, align 8
+  %21 = getelementptr inbounds %struct.TValue, %struct.TValue* %20, i32 0, i32 0
+  %22 = bitcast %union.Value* %21 to %struct.GCObject**
+  store %struct.GCObject* %19, %struct.GCObject** %22, align 8
+  %23 = load %struct.TString*, %struct.TString** %8, align 8
+  %24 = getelementptr inbounds %struct.TString, %struct.TString* %23, i32 0, i32 1
+  %25 = load i8, i8* %24, align 8
+  %26 = zext i8 %25 to i32
+  %27 = or i32 %26, 64
+  %28 = trunc i32 %27 to i8
+  %29 = load %struct.TValue*, %struct.TValue** %7, align 8
+  %30 = getelementptr inbounds %struct.TValue, %struct.TValue* %29, i32 0, i32 1
+  store i8 %28, i8* %30, align 8
   ret void
 }
 
-; Function Attrs: nounwind
-declare i32 @snprintf(i8*, i64, i8*, ...) #2
+; Function Attrs: noinline nounwind optnone uwtable
+define internal i64 @tostringbuff(%struct.TValue*, i8*) #0 {
+  %3 = alloca %struct.TValue*, align 8
+  %4 = alloca i8*, align 8
+  %5 = alloca i64, align 8
+  store %struct.TValue* %0, %struct.TValue** %3, align 8
+  store i8* %1, i8** %4, align 8
+  %6 = load %struct.TValue*, %struct.TValue** %3, align 8
+  %7 = getelementptr inbounds %struct.TValue, %struct.TValue* %6, i32 0, i32 1
+  %8 = load i8, i8* %7, align 8
+  %9 = zext i8 %8 to i32
+  %10 = icmp eq i32 %9, 35
+  br i1 %10, label %11, label %19
 
-; Function Attrs: nounwind readonly
-declare i64 @strspn(i8*, i8*) #3
+; <label>:11:                                     ; preds = %2
+  %12 = load i8*, i8** %4, align 8
+  %13 = load %struct.TValue*, %struct.TValue** %3, align 8
+  %14 = getelementptr inbounds %struct.TValue, %struct.TValue* %13, i32 0, i32 0
+  %15 = bitcast %union.Value* %14 to i64*
+  %16 = load i64, i64* %15, align 8
+  %17 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %12, i64 50, i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.8, i32 0, i32 0), i64 %16) #5
+  %18 = sext i32 %17 to i64
+  store i64 %18, i64* %5, align 8
+  br label %49
 
-; Function Attrs: nounwind
-declare %struct.lconv* @localeconv() #2
+; <label>:19:                                     ; preds = %2
+  %20 = load i8*, i8** %4, align 8
+  %21 = load %struct.TValue*, %struct.TValue** %3, align 8
+  %22 = getelementptr inbounds %struct.TValue, %struct.TValue* %21, i32 0, i32 0
+  %23 = bitcast %union.Value* %22 to double*
+  %24 = load double, double* %23, align 8
+  %25 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %20, i64 50, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.9, i32 0, i32 0), double %24) #5
+  %26 = sext i32 %25 to i64
+  store i64 %26, i64* %5, align 8
+  %27 = load i8*, i8** %4, align 8
+  %28 = load i8*, i8** %4, align 8
+  %29 = call i64 @strspn(i8* %28, i8* getelementptr inbounds ([12 x i8], [12 x i8]* @.str.10, i32 0, i32 0)) #8
+  %30 = getelementptr inbounds i8, i8* %27, i64 %29
+  %31 = load i8, i8* %30, align 1
+  %32 = sext i8 %31 to i32
+  %33 = icmp eq i32 %32, 0
+  br i1 %33, label %34, label %48
+
+; <label>:34:                                     ; preds = %19
+  %35 = call %struct.lconv* @localeconv() #5
+  %36 = getelementptr inbounds %struct.lconv, %struct.lconv* %35, i32 0, i32 0
+  %37 = load i8*, i8** %36, align 8
+  %38 = getelementptr inbounds i8, i8* %37, i64 0
+  %39 = load i8, i8* %38, align 1
+  %40 = load i8*, i8** %4, align 8
+  %41 = load i64, i64* %5, align 8
+  %42 = add i64 %41, 1
+  store i64 %42, i64* %5, align 8
+  %43 = getelementptr inbounds i8, i8* %40, i64 %41
+  store i8 %39, i8* %43, align 1
+  %44 = load i8*, i8** %4, align 8
+  %45 = load i64, i64* %5, align 8
+  %46 = add i64 %45, 1
+  store i64 %46, i64* %5, align 8
+  %47 = getelementptr inbounds i8, i8* %44, i64 %45
+  store i8 48, i8* %47, align 1
+  br label %48
+
+; <label>:48:                                     ; preds = %34, %19
+  br label %49
+
+; <label>:49:                                     ; preds = %48, %11
+  %50 = load i64, i64* %5, align 8
+  ret i64 %50
+}
 
 declare hidden %struct.TString* @luaS_newlstr(%struct.lua_State*, i8*, i64) #1
 
@@ -1309,492 +1403,525 @@ define hidden i8* @luaO_pushvfstring(%struct.lua_State*, i8*, %struct.__va_list_
   %4 = alloca %struct.lua_State*, align 8
   %5 = alloca i8*, align 8
   %6 = alloca %struct.__va_list_tag*, align 8
-  %7 = alloca i32, align 4
+  %7 = alloca %struct.BuffFS, align 8
   %8 = alloca i8*, align 8
   %9 = alloca i8*, align 8
   %10 = alloca i8, align 1
-  %11 = alloca %struct.lua_TValue*, align 8
-  %12 = alloca %struct.lua_TValue*, align 8
-  %13 = alloca %struct.lua_TValue*, align 8
-  %14 = alloca [40 x i8], align 16
-  %15 = alloca i8*, align 8
-  %16 = alloca i32, align 4
-  %17 = alloca [8 x i8], align 1
-  %18 = alloca i32, align 4
+  %11 = alloca %struct.TValue, align 8
+  %12 = alloca %struct.TValue*, align 8
+  %13 = alloca %struct.TValue, align 8
+  %14 = alloca %struct.TValue*, align 8
+  %15 = alloca %struct.TValue, align 8
+  %16 = alloca %struct.TValue*, align 8
+  %17 = alloca i32, align 4
+  %18 = alloca i8*, align 8
+  %19 = alloca i8*, align 8
+  %20 = alloca i32, align 4
+  %21 = alloca [8 x i8], align 1
+  %22 = alloca i32, align 4
   store %struct.lua_State* %0, %struct.lua_State** %4, align 8
   store i8* %1, i8** %5, align 8
   store %struct.__va_list_tag* %2, %struct.__va_list_tag** %6, align 8
-  store i32 0, i32* %7, align 4
-  br label %19
+  %23 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 2
+  store i32 0, i32* %23, align 4
+  %24 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 1
+  store i32 0, i32* %24, align 8
+  %25 = load %struct.lua_State*, %struct.lua_State** %4, align 8
+  %26 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 0
+  store %struct.lua_State* %25, %struct.lua_State** %26, align 8
+  br label %27
 
-; <label>:19:                                     ; preds = %254, %3
-  %20 = load i8*, i8** %5, align 8
-  %21 = call i8* @strchr(i8* %20, i32 37) #8
-  store i8* %21, i8** %8, align 8
-  %22 = load i8*, i8** %8, align 8
-  %23 = icmp eq i8* %22, null
-  br i1 %23, label %24, label %25
+; <label>:27:                                     ; preds = %224, %3
+  %28 = load i8*, i8** %5, align 8
+  %29 = call i8* @strchr(i8* %28, i32 37) #8
+  store i8* %29, i8** %8, align 8
+  %30 = icmp ne i8* %29, null
+  br i1 %30, label %31, label %227
 
-; <label>:24:                                     ; preds = %19
-  br label %259
-
-; <label>:25:                                     ; preds = %19
-  %26 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %27 = load i8*, i8** %5, align 8
-  %28 = load i8*, i8** %8, align 8
-  %29 = load i8*, i8** %5, align 8
-  %30 = ptrtoint i8* %28 to i64
-  %31 = ptrtoint i8* %29 to i64
-  %32 = sub i64 %30, %31
-  call void @pushstr(%struct.lua_State* %26, i8* %27, i64 %32)
+; <label>:31:                                     ; preds = %27
+  %32 = load i8*, i8** %5, align 8
   %33 = load i8*, i8** %8, align 8
-  %34 = getelementptr inbounds i8, i8* %33, i64 1
-  %35 = load i8, i8* %34, align 1
-  %36 = sext i8 %35 to i32
-  switch i32 %36, label %248 [
-    i32 115, label %37
-    i32 99, label %64
-    i32 100, label %101
-    i32 73, label %129
-    i32 102, label %156
-    i32 112, label %190
-    i32 85, label %216
-    i32 37, label %246
+  %34 = load i8*, i8** %5, align 8
+  %35 = ptrtoint i8* %33 to i64
+  %36 = ptrtoint i8* %34 to i64
+  %37 = sub i64 %35, %36
+  call void @addstr2buff(%struct.BuffFS* %7, i8* %32, i64 %37)
+  %38 = load i8*, i8** %8, align 8
+  %39 = getelementptr inbounds i8, i8* %38, i64 1
+  %40 = load i8, i8* %39, align 1
+  %41 = sext i8 %40 to i32
+  switch i32 %41, label %218 [
+    i32 115, label %42
+    i32 99, label %68
+    i32 100, label %88
+    i32 73, label %113
+    i32 102, label %137
+    i32 112, label %161
+    i32 85, label %188
+    i32 37, label %217
   ]
 
-; <label>:37:                                     ; preds = %25
-  %38 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %39 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %38, i32 0, i32 0
-  %40 = load i32, i32* %39, align 8
-  %41 = icmp ule i32 %40, 40
-  br i1 %41, label %42, label %48
+; <label>:42:                                     ; preds = %31
+  %43 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %44 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %43, i32 0, i32 0
+  %45 = load i32, i32* %44, align 8
+  %46 = icmp ule i32 %45, 40
+  br i1 %46, label %47, label %53
 
-; <label>:42:                                     ; preds = %37
-  %43 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %38, i32 0, i32 3
-  %44 = load i8*, i8** %43, align 8
-  %45 = getelementptr i8, i8* %44, i32 %40
-  %46 = bitcast i8* %45 to i8**
-  %47 = add i32 %40, 8
-  store i32 %47, i32* %39, align 8
-  br label %53
-
-; <label>:48:                                     ; preds = %37
-  %49 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %38, i32 0, i32 2
-  %50 = load i8*, i8** %49, align 8
+; <label>:47:                                     ; preds = %42
+  %48 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %43, i32 0, i32 3
+  %49 = load i8*, i8** %48, align 8
+  %50 = getelementptr i8, i8* %49, i32 %45
   %51 = bitcast i8* %50 to i8**
-  %52 = getelementptr i8, i8* %50, i32 8
-  store i8* %52, i8** %49, align 8
-  br label %53
+  %52 = add i32 %45, 8
+  store i32 %52, i32* %44, align 8
+  br label %58
 
-; <label>:53:                                     ; preds = %48, %42
-  %54 = phi i8** [ %46, %42 ], [ %51, %48 ]
+; <label>:53:                                     ; preds = %42
+  %54 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %43, i32 0, i32 2
   %55 = load i8*, i8** %54, align 8
-  store i8* %55, i8** %9, align 8
-  %56 = load i8*, i8** %9, align 8
-  %57 = icmp eq i8* %56, null
-  br i1 %57, label %58, label %59
+  %56 = bitcast i8* %55 to i8**
+  %57 = getelementptr i8, i8* %55, i32 8
+  store i8* %57, i8** %54, align 8
+  br label %58
 
-; <label>:58:                                     ; preds = %53
-  store i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.3, i32 0, i32 0), i8** %9, align 8
-  br label %59
-
-; <label>:59:                                     ; preds = %58, %53
-  %60 = load %struct.lua_State*, %struct.lua_State** %4, align 8
+; <label>:58:                                     ; preds = %53, %47
+  %59 = phi i8** [ %51, %47 ], [ %56, %53 ]
+  %60 = load i8*, i8** %59, align 8
+  store i8* %60, i8** %9, align 8
   %61 = load i8*, i8** %9, align 8
-  %62 = load i8*, i8** %9, align 8
-  %63 = call i64 @strlen(i8* %62) #8
-  call void @pushstr(%struct.lua_State* %60, i8* %61, i64 %63)
-  br label %254
+  %62 = icmp eq i8* %61, null
+  br i1 %62, label %63, label %64
 
-; <label>:64:                                     ; preds = %25
-  %65 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %66 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %65, i32 0, i32 0
-  %67 = load i32, i32* %66, align 8
-  %68 = icmp ule i32 %67, 40
-  br i1 %68, label %69, label %75
+; <label>:63:                                     ; preds = %58
+  store i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str, i32 0, i32 0), i8** %9, align 8
+  br label %64
 
-; <label>:69:                                     ; preds = %64
-  %70 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %65, i32 0, i32 3
-  %71 = load i8*, i8** %70, align 8
-  %72 = getelementptr i8, i8* %71, i32 %67
-  %73 = bitcast i8* %72 to i32*
-  %74 = add i32 %67, 8
-  store i32 %74, i32* %66, align 8
-  br label %80
+; <label>:64:                                     ; preds = %63, %58
+  %65 = load i8*, i8** %9, align 8
+  %66 = load i8*, i8** %9, align 8
+  %67 = call i64 @strlen(i8* %66) #8
+  call void @addstr2buff(%struct.BuffFS* %7, i8* %65, i64 %67)
+  br label %224
 
-; <label>:75:                                     ; preds = %64
-  %76 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %65, i32 0, i32 2
-  %77 = load i8*, i8** %76, align 8
-  %78 = bitcast i8* %77 to i32*
-  %79 = getelementptr i8, i8* %77, i32 8
-  store i8* %79, i8** %76, align 8
-  br label %80
+; <label>:68:                                     ; preds = %31
+  %69 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %70 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %69, i32 0, i32 0
+  %71 = load i32, i32* %70, align 8
+  %72 = icmp ule i32 %71, 40
+  br i1 %72, label %73, label %79
 
-; <label>:80:                                     ; preds = %75, %69
-  %81 = phi i32* [ %73, %69 ], [ %78, %75 ]
-  %82 = load i32, i32* %81, align 4
-  %83 = trunc i32 %82 to i8
-  store i8 %83, i8* %10, align 1
-  %84 = load i8, i8* %10, align 1
-  %85 = zext i8 %84 to i32
-  %86 = add nsw i32 %85, 1
-  %87 = sext i32 %86 to i64
-  %88 = getelementptr inbounds [257 x i8], [257 x i8]* @luai_ctype_, i64 0, i64 %87
-  %89 = load i8, i8* %88, align 1
-  %90 = zext i8 %89 to i32
-  %91 = and i32 %90, 4
-  %92 = icmp ne i32 %91, 0
-  br i1 %92, label %93, label %95
+; <label>:73:                                     ; preds = %68
+  %74 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %69, i32 0, i32 3
+  %75 = load i8*, i8** %74, align 8
+  %76 = getelementptr i8, i8* %75, i32 %71
+  %77 = bitcast i8* %76 to i32*
+  %78 = add i32 %71, 8
+  store i32 %78, i32* %70, align 8
+  br label %84
 
-; <label>:93:                                     ; preds = %80
-  %94 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  call void @pushstr(%struct.lua_State* %94, i8* %10, i64 1)
-  br label %100
+; <label>:79:                                     ; preds = %68
+  %80 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %69, i32 0, i32 2
+  %81 = load i8*, i8** %80, align 8
+  %82 = bitcast i8* %81 to i32*
+  %83 = getelementptr i8, i8* %81, i32 8
+  store i8* %83, i8** %80, align 8
+  br label %84
 
-; <label>:95:                                     ; preds = %80
-  %96 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %97 = load i8, i8* %10, align 1
-  %98 = zext i8 %97 to i32
-  %99 = call i8* (%struct.lua_State*, i8*, ...) @luaO_pushfstring(%struct.lua_State* %96, i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str.4, i32 0, i32 0), i32 %98)
-  br label %100
+; <label>:84:                                     ; preds = %79, %73
+  %85 = phi i32* [ %77, %73 ], [ %82, %79 ]
+  %86 = load i32, i32* %85, align 4
+  %87 = trunc i32 %86 to i8
+  store i8 %87, i8* %10, align 1
+  call void @addstr2buff(%struct.BuffFS* %7, i8* %10, i64 1)
+  br label %224
 
-; <label>:100:                                    ; preds = %95, %93
-  br label %254
+; <label>:88:                                     ; preds = %31
+  store %struct.TValue* %11, %struct.TValue** %12, align 8
+  %89 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %90 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %89, i32 0, i32 0
+  %91 = load i32, i32* %90, align 8
+  %92 = icmp ule i32 %91, 40
+  br i1 %92, label %93, label %99
 
-; <label>:101:                                    ; preds = %25
-  %102 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %103 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %102, i32 0, i32 5
-  %104 = load %struct.lua_TValue*, %struct.lua_TValue** %103, align 8
-  store %struct.lua_TValue* %104, %struct.lua_TValue** %11, align 8
-  %105 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %106 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %105, i32 0, i32 0
-  %107 = load i32, i32* %106, align 8
-  %108 = icmp ule i32 %107, 40
-  br i1 %108, label %109, label %115
+; <label>:93:                                     ; preds = %88
+  %94 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %89, i32 0, i32 3
+  %95 = load i8*, i8** %94, align 8
+  %96 = getelementptr i8, i8* %95, i32 %91
+  %97 = bitcast i8* %96 to i32*
+  %98 = add i32 %91, 8
+  store i32 %98, i32* %90, align 8
+  br label %104
 
-; <label>:109:                                    ; preds = %101
-  %110 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %105, i32 0, i32 3
-  %111 = load i8*, i8** %110, align 8
-  %112 = getelementptr i8, i8* %111, i32 %107
-  %113 = bitcast i8* %112 to i32*
-  %114 = add i32 %107, 8
-  store i32 %114, i32* %106, align 8
-  br label %120
+; <label>:99:                                     ; preds = %88
+  %100 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %89, i32 0, i32 2
+  %101 = load i8*, i8** %100, align 8
+  %102 = bitcast i8* %101 to i32*
+  %103 = getelementptr i8, i8* %101, i32 8
+  store i8* %103, i8** %100, align 8
+  br label %104
 
-; <label>:115:                                    ; preds = %101
-  %116 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %105, i32 0, i32 2
-  %117 = load i8*, i8** %116, align 8
-  %118 = bitcast i8* %117 to i32*
-  %119 = getelementptr i8, i8* %117, i32 8
-  store i8* %119, i8** %116, align 8
-  br label %120
+; <label>:104:                                    ; preds = %99, %93
+  %105 = phi i32* [ %97, %93 ], [ %102, %99 ]
+  %106 = load i32, i32* %105, align 4
+  %107 = sext i32 %106 to i64
+  %108 = load %struct.TValue*, %struct.TValue** %12, align 8
+  %109 = getelementptr inbounds %struct.TValue, %struct.TValue* %108, i32 0, i32 0
+  %110 = bitcast %union.Value* %109 to i64*
+  store i64 %107, i64* %110, align 8
+  %111 = load %struct.TValue*, %struct.TValue** %12, align 8
+  %112 = getelementptr inbounds %struct.TValue, %struct.TValue* %111, i32 0, i32 1
+  store i8 35, i8* %112, align 8
+  call void @addnum2buff(%struct.BuffFS* %7, %struct.TValue* %11)
+  br label %224
 
-; <label>:120:                                    ; preds = %115, %109
-  %121 = phi i32* [ %113, %109 ], [ %118, %115 ]
-  %122 = load i32, i32* %121, align 4
-  %123 = sext i32 %122 to i64
-  %124 = load %struct.lua_TValue*, %struct.lua_TValue** %11, align 8
-  %125 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %124, i32 0, i32 0
-  %126 = bitcast %union.Value* %125 to i64*
-  store i64 %123, i64* %126, align 8
-  %127 = load %struct.lua_TValue*, %struct.lua_TValue** %11, align 8
-  %128 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %127, i32 0, i32 1
-  store i32 19, i32* %128, align 8
-  br label %183
+; <label>:113:                                    ; preds = %31
+  store %struct.TValue* %13, %struct.TValue** %14, align 8
+  %114 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %115 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %114, i32 0, i32 0
+  %116 = load i32, i32* %115, align 8
+  %117 = icmp ule i32 %116, 40
+  br i1 %117, label %118, label %124
 
-; <label>:129:                                    ; preds = %25
-  %130 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %131 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %130, i32 0, i32 5
-  %132 = load %struct.lua_TValue*, %struct.lua_TValue** %131, align 8
-  store %struct.lua_TValue* %132, %struct.lua_TValue** %12, align 8
-  %133 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %134 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %133, i32 0, i32 0
-  %135 = load i32, i32* %134, align 8
-  %136 = icmp ule i32 %135, 40
-  br i1 %136, label %137, label %143
+; <label>:118:                                    ; preds = %113
+  %119 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %114, i32 0, i32 3
+  %120 = load i8*, i8** %119, align 8
+  %121 = getelementptr i8, i8* %120, i32 %116
+  %122 = bitcast i8* %121 to i64*
+  %123 = add i32 %116, 8
+  store i32 %123, i32* %115, align 8
+  br label %129
 
-; <label>:137:                                    ; preds = %129
-  %138 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %133, i32 0, i32 3
-  %139 = load i8*, i8** %138, align 8
-  %140 = getelementptr i8, i8* %139, i32 %135
-  %141 = bitcast i8* %140 to i64*
-  %142 = add i32 %135, 8
-  store i32 %142, i32* %134, align 8
-  br label %148
+; <label>:124:                                    ; preds = %113
+  %125 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %114, i32 0, i32 2
+  %126 = load i8*, i8** %125, align 8
+  %127 = bitcast i8* %126 to i64*
+  %128 = getelementptr i8, i8* %126, i32 8
+  store i8* %128, i8** %125, align 8
+  br label %129
 
-; <label>:143:                                    ; preds = %129
-  %144 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %133, i32 0, i32 2
-  %145 = load i8*, i8** %144, align 8
-  %146 = bitcast i8* %145 to i64*
-  %147 = getelementptr i8, i8* %145, i32 8
-  store i8* %147, i8** %144, align 8
-  br label %148
+; <label>:129:                                    ; preds = %124, %118
+  %130 = phi i64* [ %122, %118 ], [ %127, %124 ]
+  %131 = load i64, i64* %130, align 8
+  %132 = load %struct.TValue*, %struct.TValue** %14, align 8
+  %133 = getelementptr inbounds %struct.TValue, %struct.TValue* %132, i32 0, i32 0
+  %134 = bitcast %union.Value* %133 to i64*
+  store i64 %131, i64* %134, align 8
+  %135 = load %struct.TValue*, %struct.TValue** %14, align 8
+  %136 = getelementptr inbounds %struct.TValue, %struct.TValue* %135, i32 0, i32 1
+  store i8 35, i8* %136, align 8
+  call void @addnum2buff(%struct.BuffFS* %7, %struct.TValue* %13)
+  br label %224
 
-; <label>:148:                                    ; preds = %143, %137
-  %149 = phi i64* [ %141, %137 ], [ %146, %143 ]
-  %150 = load i64, i64* %149, align 8
-  %151 = load %struct.lua_TValue*, %struct.lua_TValue** %12, align 8
-  %152 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %151, i32 0, i32 0
-  %153 = bitcast %union.Value* %152 to i64*
-  store i64 %150, i64* %153, align 8
-  %154 = load %struct.lua_TValue*, %struct.lua_TValue** %12, align 8
-  %155 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %154, i32 0, i32 1
-  store i32 19, i32* %155, align 8
-  br label %183
+; <label>:137:                                    ; preds = %31
+  store %struct.TValue* %15, %struct.TValue** %16, align 8
+  %138 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %139 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %138, i32 0, i32 1
+  %140 = load i32, i32* %139, align 4
+  %141 = icmp ule i32 %140, 160
+  br i1 %141, label %142, label %148
 
-; <label>:156:                                    ; preds = %25
-  %157 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %158 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %157, i32 0, i32 5
-  %159 = load %struct.lua_TValue*, %struct.lua_TValue** %158, align 8
-  store %struct.lua_TValue* %159, %struct.lua_TValue** %13, align 8
-  %160 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %161 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %160, i32 0, i32 1
-  %162 = load i32, i32* %161, align 4
-  %163 = icmp ule i32 %162, 160
-  br i1 %163, label %164, label %170
+; <label>:142:                                    ; preds = %137
+  %143 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %138, i32 0, i32 3
+  %144 = load i8*, i8** %143, align 8
+  %145 = getelementptr i8, i8* %144, i32 %140
+  %146 = bitcast i8* %145 to double*
+  %147 = add i32 %140, 16
+  store i32 %147, i32* %139, align 4
+  br label %153
 
-; <label>:164:                                    ; preds = %156
-  %165 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %160, i32 0, i32 3
-  %166 = load i8*, i8** %165, align 8
-  %167 = getelementptr i8, i8* %166, i32 %162
-  %168 = bitcast i8* %167 to double*
-  %169 = add i32 %162, 16
-  store i32 %169, i32* %161, align 4
-  br label %175
+; <label>:148:                                    ; preds = %137
+  %149 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %138, i32 0, i32 2
+  %150 = load i8*, i8** %149, align 8
+  %151 = bitcast i8* %150 to double*
+  %152 = getelementptr i8, i8* %150, i32 8
+  store i8* %152, i8** %149, align 8
+  br label %153
 
-; <label>:170:                                    ; preds = %156
-  %171 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %160, i32 0, i32 2
-  %172 = load i8*, i8** %171, align 8
-  %173 = bitcast i8* %172 to double*
-  %174 = getelementptr i8, i8* %172, i32 8
-  store i8* %174, i8** %171, align 8
-  br label %175
+; <label>:153:                                    ; preds = %148, %142
+  %154 = phi double* [ %146, %142 ], [ %151, %148 ]
+  %155 = load double, double* %154, align 8
+  %156 = load %struct.TValue*, %struct.TValue** %16, align 8
+  %157 = getelementptr inbounds %struct.TValue, %struct.TValue* %156, i32 0, i32 0
+  %158 = bitcast %union.Value* %157 to double*
+  store double %155, double* %158, align 8
+  %159 = load %struct.TValue*, %struct.TValue** %16, align 8
+  %160 = getelementptr inbounds %struct.TValue, %struct.TValue* %159, i32 0, i32 1
+  store i8 19, i8* %160, align 8
+  call void @addnum2buff(%struct.BuffFS* %7, %struct.TValue* %15)
+  br label %224
 
-; <label>:175:                                    ; preds = %170, %164
-  %176 = phi double* [ %168, %164 ], [ %173, %170 ]
-  %177 = load double, double* %176, align 8
-  %178 = load %struct.lua_TValue*, %struct.lua_TValue** %13, align 8
-  %179 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %178, i32 0, i32 0
-  %180 = bitcast %union.Value* %179 to double*
-  store double %177, double* %180, align 8
-  %181 = load %struct.lua_TValue*, %struct.lua_TValue** %13, align 8
-  %182 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %181, i32 0, i32 1
-  store i32 3, i32* %182, align 8
-  br label %183
+; <label>:161:                                    ; preds = %31
+  store i32 32, i32* %17, align 4
+  %162 = call i8* @getbuff(%struct.BuffFS* %7, i64 32)
+  store i8* %162, i8** %18, align 8
+  %163 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %164 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %163, i32 0, i32 0
+  %165 = load i32, i32* %164, align 8
+  %166 = icmp ule i32 %165, 40
+  br i1 %166, label %167, label %173
 
-; <label>:183:                                    ; preds = %175, %148, %120
-  %184 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  call void @luaD_inctop(%struct.lua_State* %184)
-  %185 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %186 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %187 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %186, i32 0, i32 5
-  %188 = load %struct.lua_TValue*, %struct.lua_TValue** %187, align 8
-  %189 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %188, i64 -1
-  call void @luaO_tostring(%struct.lua_State* %185, %struct.lua_TValue* %189)
-  br label %254
+; <label>:167:                                    ; preds = %161
+  %168 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %163, i32 0, i32 3
+  %169 = load i8*, i8** %168, align 8
+  %170 = getelementptr i8, i8* %169, i32 %165
+  %171 = bitcast i8* %170 to i8**
+  %172 = add i32 %165, 8
+  store i32 %172, i32* %164, align 8
+  br label %178
 
-; <label>:190:                                    ; preds = %25
-  %191 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %192 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %191, i32 0, i32 0
-  %193 = load i32, i32* %192, align 8
-  %194 = icmp ule i32 %193, 40
-  br i1 %194, label %195, label %201
+; <label>:173:                                    ; preds = %161
+  %174 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %163, i32 0, i32 2
+  %175 = load i8*, i8** %174, align 8
+  %176 = bitcast i8* %175 to i8**
+  %177 = getelementptr i8, i8* %175, i32 8
+  store i8* %177, i8** %174, align 8
+  br label %178
 
-; <label>:195:                                    ; preds = %190
-  %196 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %191, i32 0, i32 3
-  %197 = load i8*, i8** %196, align 8
-  %198 = getelementptr i8, i8* %197, i32 %193
-  %199 = bitcast i8* %198 to i8**
-  %200 = add i32 %193, 8
-  store i32 %200, i32* %192, align 8
-  br label %206
+; <label>:178:                                    ; preds = %173, %167
+  %179 = phi i8** [ %171, %167 ], [ %176, %173 ]
+  %180 = load i8*, i8** %179, align 8
+  store i8* %180, i8** %19, align 8
+  %181 = load i8*, i8** %18, align 8
+  %182 = load i8*, i8** %19, align 8
+  %183 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %181, i64 32, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.1, i32 0, i32 0), i8* %182) #5
+  store i32 %183, i32* %20, align 4
+  %184 = load i32, i32* %20, align 4
+  %185 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 2
+  %186 = load i32, i32* %185, align 4
+  %187 = add nsw i32 %186, %184
+  store i32 %187, i32* %185, align 4
+  br label %224
 
-; <label>:201:                                    ; preds = %190
-  %202 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %191, i32 0, i32 2
-  %203 = load i8*, i8** %202, align 8
-  %204 = bitcast i8* %203 to i8**
-  %205 = getelementptr i8, i8* %203, i32 8
-  store i8* %205, i8** %202, align 8
-  br label %206
+; <label>:188:                                    ; preds = %31
+  %189 = getelementptr inbounds [8 x i8], [8 x i8]* %21, i32 0, i32 0
+  %190 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
+  %191 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %190, i32 0, i32 0
+  %192 = load i32, i32* %191, align 8
+  %193 = icmp ule i32 %192, 40
+  br i1 %193, label %194, label %200
 
-; <label>:206:                                    ; preds = %201, %195
-  %207 = phi i8** [ %199, %195 ], [ %204, %201 ]
-  %208 = load i8*, i8** %207, align 8
-  store i8* %208, i8** %15, align 8
-  %209 = getelementptr inbounds [40 x i8], [40 x i8]* %14, i32 0, i32 0
-  %210 = load i8*, i8** %15, align 8
-  %211 = call i32 (i8*, i64, i8*, ...) @snprintf(i8* %209, i64 40, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.5, i32 0, i32 0), i8* %210) #5
-  store i32 %211, i32* %16, align 4
-  %212 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %213 = getelementptr inbounds [40 x i8], [40 x i8]* %14, i32 0, i32 0
-  %214 = load i32, i32* %16, align 4
-  %215 = sext i32 %214 to i64
-  call void @pushstr(%struct.lua_State* %212, i8* %213, i64 %215)
-  br label %254
+; <label>:194:                                    ; preds = %188
+  %195 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %190, i32 0, i32 3
+  %196 = load i8*, i8** %195, align 8
+  %197 = getelementptr i8, i8* %196, i32 %192
+  %198 = bitcast i8* %197 to i64*
+  %199 = add i32 %192, 8
+  store i32 %199, i32* %191, align 8
+  br label %205
 
-; <label>:216:                                    ; preds = %25
-  %217 = getelementptr inbounds [8 x i8], [8 x i8]* %17, i32 0, i32 0
-  %218 = load %struct.__va_list_tag*, %struct.__va_list_tag** %6, align 8
-  %219 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %218, i32 0, i32 0
-  %220 = load i32, i32* %219, align 8
-  %221 = icmp ule i32 %220, 40
-  br i1 %221, label %222, label %228
+; <label>:200:                                    ; preds = %188
+  %201 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %190, i32 0, i32 2
+  %202 = load i8*, i8** %201, align 8
+  %203 = bitcast i8* %202 to i64*
+  %204 = getelementptr i8, i8* %202, i32 8
+  store i8* %204, i8** %201, align 8
+  br label %205
 
-; <label>:222:                                    ; preds = %216
-  %223 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %218, i32 0, i32 3
-  %224 = load i8*, i8** %223, align 8
-  %225 = getelementptr i8, i8* %224, i32 %220
-  %226 = bitcast i8* %225 to i64*
-  %227 = add i32 %220, 8
-  store i32 %227, i32* %219, align 8
-  br label %233
+; <label>:205:                                    ; preds = %200, %194
+  %206 = phi i64* [ %198, %194 ], [ %203, %200 ]
+  %207 = load i64, i64* %206, align 8
+  %208 = call i32 @luaO_utf8esc(i8* %189, i64 %207)
+  store i32 %208, i32* %22, align 4
+  %209 = getelementptr inbounds [8 x i8], [8 x i8]* %21, i32 0, i32 0
+  %210 = getelementptr inbounds i8, i8* %209, i64 8
+  %211 = load i32, i32* %22, align 4
+  %212 = sext i32 %211 to i64
+  %213 = sub i64 0, %212
+  %214 = getelementptr inbounds i8, i8* %210, i64 %213
+  %215 = load i32, i32* %22, align 4
+  %216 = sext i32 %215 to i64
+  call void @addstr2buff(%struct.BuffFS* %7, i8* %214, i64 %216)
+  br label %224
 
-; <label>:228:                                    ; preds = %216
-  %229 = getelementptr inbounds %struct.__va_list_tag, %struct.__va_list_tag* %218, i32 0, i32 2
-  %230 = load i8*, i8** %229, align 8
-  %231 = bitcast i8* %230 to i64*
-  %232 = getelementptr i8, i8* %230, i32 8
-  store i8* %232, i8** %229, align 8
-  br label %233
+; <label>:217:                                    ; preds = %31
+  call void @addstr2buff(%struct.BuffFS* %7, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.2, i32 0, i32 0), i64 1)
+  br label %224
 
-; <label>:233:                                    ; preds = %228, %222
-  %234 = phi i64* [ %226, %222 ], [ %231, %228 ]
-  %235 = load i64, i64* %234, align 8
-  %236 = call i32 @luaO_utf8esc(i8* %217, i64 %235)
-  store i32 %236, i32* %18, align 4
-  %237 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %238 = getelementptr inbounds [8 x i8], [8 x i8]* %17, i32 0, i32 0
-  %239 = getelementptr inbounds i8, i8* %238, i64 8
-  %240 = load i32, i32* %18, align 4
-  %241 = sext i32 %240 to i64
-  %242 = sub i64 0, %241
-  %243 = getelementptr inbounds i8, i8* %239, i64 %242
-  %244 = load i32, i32* %18, align 4
-  %245 = sext i32 %244 to i64
-  call void @pushstr(%struct.lua_State* %237, i8* %243, i64 %245)
-  br label %254
-
-; <label>:246:                                    ; preds = %25
-  %247 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  call void @pushstr(%struct.lua_State* %247, i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.6, i32 0, i32 0), i64 1)
-  br label %254
-
-; <label>:248:                                    ; preds = %25
-  %249 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %250 = load i8*, i8** %8, align 8
-  %251 = getelementptr inbounds i8, i8* %250, i64 1
-  %252 = load i8, i8* %251, align 1
-  %253 = sext i8 %252 to i32
-  call void (%struct.lua_State*, i8*, ...) @luaG_runerror(%struct.lua_State* %249, i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.7, i32 0, i32 0), i32 %253) #9
+; <label>:218:                                    ; preds = %31
+  %219 = load %struct.lua_State*, %struct.lua_State** %4, align 8
+  %220 = load i8*, i8** %8, align 8
+  %221 = getelementptr inbounds i8, i8* %220, i64 1
+  %222 = load i8, i8* %221, align 1
+  %223 = sext i8 %222 to i32
+  call void (%struct.lua_State*, i8*, ...) @luaG_runerror(%struct.lua_State* %219, i8* getelementptr inbounds ([43 x i8], [43 x i8]* @.str.3, i32 0, i32 0), i32 %223) #9
   unreachable
 
-; <label>:254:                                    ; preds = %246, %233, %206, %183, %100, %59
-  %255 = load i32, i32* %7, align 4
-  %256 = add nsw i32 %255, 2
-  store i32 %256, i32* %7, align 4
-  %257 = load i8*, i8** %8, align 8
-  %258 = getelementptr inbounds i8, i8* %257, i64 2
-  store i8* %258, i8** %5, align 8
-  br label %19
+; <label>:224:                                    ; preds = %217, %205, %178, %153, %129, %104, %84, %64
+  %225 = load i8*, i8** %8, align 8
+  %226 = getelementptr inbounds i8, i8* %225, i64 2
+  store i8* %226, i8** %5, align 8
+  br label %27
 
-; <label>:259:                                    ; preds = %24
-  %260 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %261 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %260, i32 0, i32 9
-  %262 = load %struct.lua_TValue*, %struct.lua_TValue** %261, align 8
-  %263 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %264 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %263, i32 0, i32 5
-  %265 = load %struct.lua_TValue*, %struct.lua_TValue** %264, align 8
-  %266 = ptrtoint %struct.lua_TValue* %262 to i64
-  %267 = ptrtoint %struct.lua_TValue* %265 to i64
-  %268 = sub i64 %266, %267
-  %269 = sdiv exact i64 %268, 16
-  %270 = icmp sle i64 %269, 1
-  br i1 %270, label %271, label %273
+; <label>:227:                                    ; preds = %27
+  %228 = load i8*, i8** %5, align 8
+  %229 = load i8*, i8** %5, align 8
+  %230 = call i64 @strlen(i8* %229) #8
+  call void @addstr2buff(%struct.BuffFS* %7, i8* %228, i64 %230)
+  call void @clearbuff(%struct.BuffFS* %7)
+  %231 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 1
+  %232 = load i32, i32* %231, align 8
+  %233 = icmp sgt i32 %232, 1
+  br i1 %233, label %234, label %238
 
-; <label>:271:                                    ; preds = %259
-  %272 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  call void @luaD_growstack(%struct.lua_State* %272, i32 1)
-  br label %274
+; <label>:234:                                    ; preds = %227
+  %235 = load %struct.lua_State*, %struct.lua_State** %4, align 8
+  %236 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 1
+  %237 = load i32, i32* %236, align 8
+  call void @luaV_concat(%struct.lua_State* %235, i32 %237)
+  br label %238
 
-; <label>:273:                                    ; preds = %259
-  br label %274
-
-; <label>:274:                                    ; preds = %273, %271
-  %275 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %276 = load i8*, i8** %5, align 8
-  %277 = load i8*, i8** %5, align 8
-  %278 = call i64 @strlen(i8* %277) #8
-  call void @pushstr(%struct.lua_State* %275, i8* %276, i64 %278)
-  %279 = load i32, i32* %7, align 4
-  %280 = icmp sgt i32 %279, 0
-  br i1 %280, label %281, label %285
-
-; <label>:281:                                    ; preds = %274
-  %282 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %283 = load i32, i32* %7, align 4
-  %284 = add nsw i32 %283, 1
-  call void @luaV_concat(%struct.lua_State* %282, i32 %284)
-  br label %285
-
-; <label>:285:                                    ; preds = %281, %274
-  %286 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %287 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %286, i32 0, i32 5
-  %288 = load %struct.lua_TValue*, %struct.lua_TValue** %287, align 8
-  %289 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %288, i64 -1
-  %290 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %289, i32 0, i32 0
-  %291 = bitcast %union.Value* %290 to %struct.GCObject**
-  %292 = load %struct.GCObject*, %struct.GCObject** %291, align 8
-  %293 = bitcast %struct.GCObject* %292 to %union.GCUnion*
-  %294 = bitcast %union.GCUnion* %293 to %struct.TString*
-  %295 = bitcast %struct.TString* %294 to i8*
-  %296 = getelementptr inbounds i8, i8* %295, i64 24
-  ret i8* %296
+; <label>:238:                                    ; preds = %234, %227
+  %239 = load %struct.lua_State*, %struct.lua_State** %4, align 8
+  %240 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %239, i32 0, i32 6
+  %241 = load %union.StackValue*, %union.StackValue** %240, align 8
+  %242 = getelementptr inbounds %union.StackValue, %union.StackValue* %241, i64 -1
+  %243 = bitcast %union.StackValue* %242 to %struct.TValue*
+  %244 = getelementptr inbounds %struct.TValue, %struct.TValue* %243, i32 0, i32 0
+  %245 = bitcast %union.Value* %244 to %struct.GCObject**
+  %246 = load %struct.GCObject*, %struct.GCObject** %245, align 8
+  %247 = bitcast %struct.GCObject* %246 to %union.GCUnion*
+  %248 = bitcast %union.GCUnion* %247 to %struct.TString*
+  %249 = bitcast %struct.TString* %248 to i8*
+  %250 = getelementptr inbounds i8, i8* %249, i64 24
+  ret i8* %250
 }
 
 ; Function Attrs: nounwind readonly
-declare i8* @strchr(i8*, i32) #3
+declare i8* @strchr(i8*, i32) #2
 
 ; Function Attrs: noinline nounwind optnone uwtable
-define internal void @pushstr(%struct.lua_State*, i8*, i64) #0 {
-  %4 = alloca %struct.lua_State*, align 8
+define internal void @addstr2buff(%struct.BuffFS*, i8*, i64) #0 {
+  %4 = alloca %struct.BuffFS*, align 8
   %5 = alloca i8*, align 8
   %6 = alloca i64, align 8
-  %7 = alloca %struct.lua_TValue*, align 8
-  %8 = alloca %struct.TString*, align 8
-  store %struct.lua_State* %0, %struct.lua_State** %4, align 8
+  %7 = alloca i8*, align 8
+  store %struct.BuffFS* %0, %struct.BuffFS** %4, align 8
   store i8* %1, i8** %5, align 8
   store i64 %2, i64* %6, align 8
-  %9 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %10 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %9, i32 0, i32 5
-  %11 = load %struct.lua_TValue*, %struct.lua_TValue** %10, align 8
-  store %struct.lua_TValue* %11, %struct.lua_TValue** %7, align 8
-  %12 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  %13 = load i8*, i8** %5, align 8
-  %14 = load i64, i64* %6, align 8
-  %15 = call %struct.TString* @luaS_newlstr(%struct.lua_State* %12, i8* %13, i64 %14)
-  store %struct.TString* %15, %struct.TString** %8, align 8
-  %16 = load %struct.TString*, %struct.TString** %8, align 8
-  %17 = bitcast %struct.TString* %16 to %union.GCUnion*
-  %18 = bitcast %union.GCUnion* %17 to %struct.GCObject*
-  %19 = load %struct.lua_TValue*, %struct.lua_TValue** %7, align 8
-  %20 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %19, i32 0, i32 0
-  %21 = bitcast %union.Value* %20 to %struct.GCObject**
-  store %struct.GCObject* %18, %struct.GCObject** %21, align 8
-  %22 = load %struct.TString*, %struct.TString** %8, align 8
-  %23 = getelementptr inbounds %struct.TString, %struct.TString* %22, i32 0, i32 1
-  %24 = load i8, i8* %23, align 8
-  %25 = zext i8 %24 to i32
-  %26 = or i32 %25, 64
-  %27 = load %struct.lua_TValue*, %struct.lua_TValue** %7, align 8
-  %28 = getelementptr inbounds %struct.lua_TValue, %struct.lua_TValue* %27, i32 0, i32 1
-  store i32 %26, i32* %28, align 8
-  %29 = load %struct.lua_State*, %struct.lua_State** %4, align 8
-  call void @luaD_inctop(%struct.lua_State* %29)
+  %8 = load i64, i64* %6, align 8
+  %9 = icmp ule i64 %8, 400
+  br i1 %9, label %10, label %24
+
+; <label>:10:                                     ; preds = %3
+  %11 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %12 = load i64, i64* %6, align 8
+  %13 = call i8* @getbuff(%struct.BuffFS* %11, i64 %12)
+  store i8* %13, i8** %7, align 8
+  %14 = load i8*, i8** %7, align 8
+  %15 = load i8*, i8** %5, align 8
+  %16 = load i64, i64* %6, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %14, i8* %15, i64 %16, i32 1, i1 false)
+  %17 = load i64, i64* %6, align 8
+  %18 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %19 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %18, i32 0, i32 2
+  %20 = load i32, i32* %19, align 4
+  %21 = sext i32 %20 to i64
+  %22 = add i64 %21, %17
+  %23 = trunc i64 %22 to i32
+  store i32 %23, i32* %19, align 4
+  br label %29
+
+; <label>:24:                                     ; preds = %3
+  %25 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  call void @clearbuff(%struct.BuffFS* %25)
+  %26 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %27 = load i8*, i8** %5, align 8
+  %28 = load i64, i64* %6, align 8
+  call void @pushstr(%struct.BuffFS* %26, i8* %27, i64 %28)
+  br label %29
+
+; <label>:29:                                     ; preds = %24, %10
   ret void
 }
 
 ; Function Attrs: nounwind readonly
-declare i64 @strlen(i8*) #3
+declare i64 @strlen(i8*) #2
+
+; Function Attrs: noinline nounwind optnone uwtable
+define internal void @addnum2buff(%struct.BuffFS*, %struct.TValue*) #0 {
+  %3 = alloca %struct.BuffFS*, align 8
+  %4 = alloca %struct.TValue*, align 8
+  %5 = alloca i8*, align 8
+  %6 = alloca i64, align 8
+  store %struct.BuffFS* %0, %struct.BuffFS** %3, align 8
+  store %struct.TValue* %1, %struct.TValue** %4, align 8
+  %7 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  %8 = call i8* @getbuff(%struct.BuffFS* %7, i64 50)
+  store i8* %8, i8** %5, align 8
+  %9 = load %struct.TValue*, %struct.TValue** %4, align 8
+  %10 = load i8*, i8** %5, align 8
+  %11 = call i64 @tostringbuff(%struct.TValue* %9, i8* %10)
+  store i64 %11, i64* %6, align 8
+  %12 = load i64, i64* %6, align 8
+  %13 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  %14 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %13, i32 0, i32 2
+  %15 = load i32, i32* %14, align 4
+  %16 = sext i32 %15 to i64
+  %17 = add i64 %16, %12
+  %18 = trunc i64 %17 to i32
+  store i32 %18, i32* %14, align 4
+  ret void
+}
+
+; Function Attrs: noinline nounwind optnone uwtable
+define internal i8* @getbuff(%struct.BuffFS*, i64) #0 {
+  %3 = alloca %struct.BuffFS*, align 8
+  %4 = alloca i64, align 8
+  store %struct.BuffFS* %0, %struct.BuffFS** %3, align 8
+  store i64 %1, i64* %4, align 8
+  %5 = load i64, i64* %4, align 8
+  %6 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  %7 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %6, i32 0, i32 2
+  %8 = load i32, i32* %7, align 4
+  %9 = sext i32 %8 to i64
+  %10 = sub i64 400, %9
+  %11 = icmp ugt i64 %5, %10
+  br i1 %11, label %12, label %14
+
+; <label>:12:                                     ; preds = %2
+  %13 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  call void @clearbuff(%struct.BuffFS* %13)
+  br label %14
+
+; <label>:14:                                     ; preds = %12, %2
+  %15 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  %16 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %15, i32 0, i32 3
+  %17 = getelementptr inbounds [400 x i8], [400 x i8]* %16, i32 0, i32 0
+  %18 = load %struct.BuffFS*, %struct.BuffFS** %3, align 8
+  %19 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %18, i32 0, i32 2
+  %20 = load i32, i32* %19, align 4
+  %21 = sext i32 %20 to i64
+  %22 = getelementptr inbounds i8, i8* %17, i64 %21
+  ret i8* %22
+}
+
+; Function Attrs: nounwind
+declare i32 @snprintf(i8*, i64, i8*, ...) #3
+
+; Function Attrs: noreturn
+declare hidden void @luaG_runerror(%struct.lua_State*, i8*, ...) #4
+
+; Function Attrs: noinline nounwind optnone uwtable
+define internal void @clearbuff(%struct.BuffFS*) #0 {
+  %2 = alloca %struct.BuffFS*, align 8
+  store %struct.BuffFS* %0, %struct.BuffFS** %2, align 8
+  %3 = load %struct.BuffFS*, %struct.BuffFS** %2, align 8
+  %4 = load %struct.BuffFS*, %struct.BuffFS** %2, align 8
+  %5 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %4, i32 0, i32 3
+  %6 = getelementptr inbounds [400 x i8], [400 x i8]* %5, i32 0, i32 0
+  %7 = load %struct.BuffFS*, %struct.BuffFS** %2, align 8
+  %8 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %7, i32 0, i32 2
+  %9 = load i32, i32* %8, align 4
+  %10 = sext i32 %9 to i64
+  call void @pushstr(%struct.BuffFS* %3, i8* %6, i64 %10)
+  %11 = load %struct.BuffFS*, %struct.BuffFS** %2, align 8
+  %12 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %11, i32 0, i32 2
+  store i32 0, i32* %12, align 4
+  ret void
+}
+
+declare hidden void @luaV_concat(%struct.lua_State*, i32) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define hidden i8* @luaO_pushfstring(%struct.lua_State*, i8*, ...) #0 {
@@ -1819,15 +1946,6 @@ define hidden i8* @luaO_pushfstring(%struct.lua_State*, i8*, ...) #0 {
   ret i8* %15
 }
 
-declare hidden void @luaD_inctop(%struct.lua_State*) #1
-
-; Function Attrs: noreturn
-declare hidden void @luaG_runerror(%struct.lua_State*, i8*, ...) #4
-
-declare hidden void @luaD_growstack(%struct.lua_State*, i32) #1
-
-declare hidden void @luaV_concat(%struct.lua_State*, i32) #1
-
 ; Function Attrs: nounwind
 declare void @llvm.va_start(i8*) #5
 
@@ -1844,182 +1962,180 @@ define hidden void @luaO_chunkid(i8*, i8*, i64) #0 {
   store i8* %0, i8** %4, align 8
   store i8* %1, i8** %5, align 8
   store i64 %2, i64* %6, align 8
+  store i64 60, i64* %7, align 8
   %9 = load i8*, i8** %5, align 8
-  %10 = call i64 @strlen(i8* %9) #8
-  store i64 %10, i64* %7, align 8
-  %11 = load i8*, i8** %5, align 8
-  %12 = load i8, i8* %11, align 1
-  %13 = sext i8 %12 to i32
-  %14 = icmp eq i32 %13, 61
-  br i1 %14, label %15, label %38
+  %10 = load i8, i8* %9, align 1
+  %11 = sext i8 %10 to i32
+  %12 = icmp eq i32 %11, 61
+  br i1 %12, label %13, label %36
 
-; <label>:15:                                     ; preds = %3
-  %16 = load i64, i64* %7, align 8
-  %17 = load i64, i64* %6, align 8
-  %18 = icmp ule i64 %16, %17
-  br i1 %18, label %19, label %25
+; <label>:13:                                     ; preds = %3
+  %14 = load i64, i64* %6, align 8
+  %15 = load i64, i64* %7, align 8
+  %16 = icmp ule i64 %14, %15
+  br i1 %16, label %17, label %23
 
-; <label>:19:                                     ; preds = %15
-  %20 = load i8*, i8** %4, align 8
-  %21 = load i8*, i8** %5, align 8
-  %22 = getelementptr inbounds i8, i8* %21, i64 1
-  %23 = load i64, i64* %7, align 8
-  %24 = mul i64 %23, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %20, i8* %22, i64 %24, i32 1, i1 false)
-  br label %37
+; <label>:17:                                     ; preds = %13
+  %18 = load i8*, i8** %4, align 8
+  %19 = load i8*, i8** %5, align 8
+  %20 = getelementptr inbounds i8, i8* %19, i64 1
+  %21 = load i64, i64* %6, align 8
+  %22 = mul i64 %21, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %18, i8* %20, i64 %22, i32 1, i1 false)
+  br label %35
 
-; <label>:25:                                     ; preds = %15
-  %26 = load i8*, i8** %4, align 8
-  %27 = load i8*, i8** %5, align 8
-  %28 = getelementptr inbounds i8, i8* %27, i64 1
-  %29 = load i64, i64* %6, align 8
-  %30 = sub i64 %29, 1
-  %31 = mul i64 %30, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %26, i8* %28, i64 %31, i32 1, i1 false)
-  %32 = load i64, i64* %6, align 8
-  %33 = sub i64 %32, 1
+; <label>:23:                                     ; preds = %13
+  %24 = load i8*, i8** %4, align 8
+  %25 = load i8*, i8** %5, align 8
+  %26 = getelementptr inbounds i8, i8* %25, i64 1
+  %27 = load i64, i64* %7, align 8
+  %28 = sub i64 %27, 1
+  %29 = mul i64 %28, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %24, i8* %26, i64 %29, i32 1, i1 false)
+  %30 = load i64, i64* %7, align 8
+  %31 = sub i64 %30, 1
+  %32 = load i8*, i8** %4, align 8
+  %33 = getelementptr inbounds i8, i8* %32, i64 %31
+  store i8* %33, i8** %4, align 8
   %34 = load i8*, i8** %4, align 8
-  %35 = getelementptr inbounds i8, i8* %34, i64 %33
-  store i8* %35, i8** %4, align 8
-  %36 = load i8*, i8** %4, align 8
-  store i8 0, i8* %36, align 1
-  br label %37
+  store i8 0, i8* %34, align 1
+  br label %35
 
-; <label>:37:                                     ; preds = %25, %19
-  br label %121
+; <label>:35:                                     ; preds = %23, %17
+  br label %119
 
-; <label>:38:                                     ; preds = %3
-  %39 = load i8*, i8** %5, align 8
-  %40 = load i8, i8* %39, align 1
-  %41 = sext i8 %40 to i32
-  %42 = icmp eq i32 %41, 64
-  br i1 %42, label %43, label %70
+; <label>:36:                                     ; preds = %3
+  %37 = load i8*, i8** %5, align 8
+  %38 = load i8, i8* %37, align 1
+  %39 = sext i8 %38 to i32
+  %40 = icmp eq i32 %39, 64
+  br i1 %40, label %41, label %68
 
-; <label>:43:                                     ; preds = %38
-  %44 = load i64, i64* %7, align 8
-  %45 = load i64, i64* %6, align 8
-  %46 = icmp ule i64 %44, %45
-  br i1 %46, label %47, label %53
+; <label>:41:                                     ; preds = %36
+  %42 = load i64, i64* %6, align 8
+  %43 = load i64, i64* %7, align 8
+  %44 = icmp ule i64 %42, %43
+  br i1 %44, label %45, label %51
 
-; <label>:47:                                     ; preds = %43
-  %48 = load i8*, i8** %4, align 8
-  %49 = load i8*, i8** %5, align 8
-  %50 = getelementptr inbounds i8, i8* %49, i64 1
-  %51 = load i64, i64* %7, align 8
-  %52 = mul i64 %51, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %48, i8* %50, i64 %52, i32 1, i1 false)
-  br label %69
+; <label>:45:                                     ; preds = %41
+  %46 = load i8*, i8** %4, align 8
+  %47 = load i8*, i8** %5, align 8
+  %48 = getelementptr inbounds i8, i8* %47, i64 1
+  %49 = load i64, i64* %6, align 8
+  %50 = mul i64 %49, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %46, i8* %48, i64 %50, i32 1, i1 false)
+  br label %67
 
-; <label>:53:                                     ; preds = %43
-  %54 = load i8*, i8** %4, align 8
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %54, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.8, i32 0, i32 0), i64 3, i32 1, i1 false)
-  %55 = load i8*, i8** %4, align 8
-  %56 = getelementptr inbounds i8, i8* %55, i64 3
-  store i8* %56, i8** %4, align 8
-  %57 = load i64, i64* %6, align 8
-  %58 = sub i64 %57, 3
-  store i64 %58, i64* %6, align 8
-  %59 = load i8*, i8** %4, align 8
-  %60 = load i8*, i8** %5, align 8
-  %61 = getelementptr inbounds i8, i8* %60, i64 1
+; <label>:51:                                     ; preds = %41
+  %52 = load i8*, i8** %4, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %52, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i64 3, i32 1, i1 false)
+  %53 = load i8*, i8** %4, align 8
+  %54 = getelementptr inbounds i8, i8* %53, i64 3
+  store i8* %54, i8** %4, align 8
+  %55 = load i64, i64* %7, align 8
+  %56 = sub i64 %55, 3
+  store i64 %56, i64* %7, align 8
+  %57 = load i8*, i8** %4, align 8
+  %58 = load i8*, i8** %5, align 8
+  %59 = getelementptr inbounds i8, i8* %58, i64 1
+  %60 = load i64, i64* %6, align 8
+  %61 = getelementptr inbounds i8, i8* %59, i64 %60
   %62 = load i64, i64* %7, align 8
-  %63 = getelementptr inbounds i8, i8* %61, i64 %62
-  %64 = load i64, i64* %6, align 8
-  %65 = sub i64 0, %64
-  %66 = getelementptr inbounds i8, i8* %63, i64 %65
-  %67 = load i64, i64* %6, align 8
-  %68 = mul i64 %67, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %59, i8* %66, i64 %68, i32 1, i1 false)
-  br label %69
+  %63 = sub i64 0, %62
+  %64 = getelementptr inbounds i8, i8* %61, i64 %63
+  %65 = load i64, i64* %7, align 8
+  %66 = mul i64 %65, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %57, i8* %64, i64 %66, i32 1, i1 false)
+  br label %67
 
-; <label>:69:                                     ; preds = %53, %47
-  br label %120
+; <label>:67:                                     ; preds = %51, %45
+  br label %118
 
-; <label>:70:                                     ; preds = %38
-  %71 = load i8*, i8** %5, align 8
-  %72 = call i8* @strchr(i8* %71, i32 10) #8
-  store i8* %72, i8** %8, align 8
-  %73 = load i8*, i8** %4, align 8
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %73, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.9, i32 0, i32 0), i64 9, i32 1, i1 false)
-  %74 = load i8*, i8** %4, align 8
-  %75 = getelementptr inbounds i8, i8* %74, i64 9
-  store i8* %75, i8** %4, align 8
+; <label>:68:                                     ; preds = %36
+  %69 = load i8*, i8** %5, align 8
+  %70 = call i8* @strchr(i8* %69, i32 10) #8
+  store i8* %70, i8** %8, align 8
+  %71 = load i8*, i8** %4, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %71, i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.5, i32 0, i32 0), i64 9, i32 1, i1 false)
+  %72 = load i8*, i8** %4, align 8
+  %73 = getelementptr inbounds i8, i8* %72, i64 9
+  store i8* %73, i8** %4, align 8
+  %74 = load i64, i64* %7, align 8
+  %75 = sub i64 %74, 15
+  store i64 %75, i64* %7, align 8
   %76 = load i64, i64* %6, align 8
-  %77 = sub i64 %76, 15
-  store i64 %77, i64* %6, align 8
-  %78 = load i64, i64* %7, align 8
-  %79 = load i64, i64* %6, align 8
-  %80 = icmp ult i64 %78, %79
-  br i1 %80, label %81, label %92
+  %77 = load i64, i64* %7, align 8
+  %78 = icmp ult i64 %76, %77
+  br i1 %78, label %79, label %90
 
-; <label>:81:                                     ; preds = %70
-  %82 = load i8*, i8** %8, align 8
-  %83 = icmp eq i8* %82, null
-  br i1 %83, label %84, label %92
+; <label>:79:                                     ; preds = %68
+  %80 = load i8*, i8** %8, align 8
+  %81 = icmp eq i8* %80, null
+  br i1 %81, label %82, label %90
 
-; <label>:84:                                     ; preds = %81
-  %85 = load i8*, i8** %4, align 8
-  %86 = load i8*, i8** %5, align 8
-  %87 = load i64, i64* %7, align 8
-  %88 = mul i64 %87, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %85, i8* %86, i64 %88, i32 1, i1 false)
-  %89 = load i64, i64* %7, align 8
-  %90 = load i8*, i8** %4, align 8
-  %91 = getelementptr inbounds i8, i8* %90, i64 %89
-  store i8* %91, i8** %4, align 8
-  br label %118
+; <label>:82:                                     ; preds = %79
+  %83 = load i8*, i8** %4, align 8
+  %84 = load i8*, i8** %5, align 8
+  %85 = load i64, i64* %6, align 8
+  %86 = mul i64 %85, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %83, i8* %84, i64 %86, i32 1, i1 false)
+  %87 = load i64, i64* %6, align 8
+  %88 = load i8*, i8** %4, align 8
+  %89 = getelementptr inbounds i8, i8* %88, i64 %87
+  store i8* %89, i8** %4, align 8
+  br label %116
 
-; <label>:92:                                     ; preds = %81, %70
-  %93 = load i8*, i8** %8, align 8
-  %94 = icmp ne i8* %93, null
-  br i1 %94, label %95, label %101
+; <label>:90:                                     ; preds = %79, %68
+  %91 = load i8*, i8** %8, align 8
+  %92 = icmp ne i8* %91, null
+  br i1 %92, label %93, label %99
 
-; <label>:95:                                     ; preds = %92
-  %96 = load i8*, i8** %8, align 8
-  %97 = load i8*, i8** %5, align 8
-  %98 = ptrtoint i8* %96 to i64
-  %99 = ptrtoint i8* %97 to i64
-  %100 = sub i64 %98, %99
-  store i64 %100, i64* %7, align 8
-  br label %101
+; <label>:93:                                     ; preds = %90
+  %94 = load i8*, i8** %8, align 8
+  %95 = load i8*, i8** %5, align 8
+  %96 = ptrtoint i8* %94 to i64
+  %97 = ptrtoint i8* %95 to i64
+  %98 = sub i64 %96, %97
+  store i64 %98, i64* %6, align 8
+  br label %99
 
-; <label>:101:                                    ; preds = %95, %92
-  %102 = load i64, i64* %7, align 8
-  %103 = load i64, i64* %6, align 8
-  %104 = icmp ugt i64 %102, %103
-  br i1 %104, label %105, label %107
+; <label>:99:                                     ; preds = %93, %90
+  %100 = load i64, i64* %6, align 8
+  %101 = load i64, i64* %7, align 8
+  %102 = icmp ugt i64 %100, %101
+  br i1 %102, label %103, label %105
 
-; <label>:105:                                    ; preds = %101
-  %106 = load i64, i64* %6, align 8
-  store i64 %106, i64* %7, align 8
-  br label %107
+; <label>:103:                                    ; preds = %99
+  %104 = load i64, i64* %7, align 8
+  store i64 %104, i64* %6, align 8
+  br label %105
 
-; <label>:107:                                    ; preds = %105, %101
-  %108 = load i8*, i8** %4, align 8
-  %109 = load i8*, i8** %5, align 8
-  %110 = load i64, i64* %7, align 8
-  %111 = mul i64 %110, 1
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %108, i8* %109, i64 %111, i32 1, i1 false)
-  %112 = load i64, i64* %7, align 8
+; <label>:105:                                    ; preds = %103, %99
+  %106 = load i8*, i8** %4, align 8
+  %107 = load i8*, i8** %5, align 8
+  %108 = load i64, i64* %6, align 8
+  %109 = mul i64 %108, 1
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %106, i8* %107, i64 %109, i32 1, i1 false)
+  %110 = load i64, i64* %6, align 8
+  %111 = load i8*, i8** %4, align 8
+  %112 = getelementptr inbounds i8, i8* %111, i64 %110
+  store i8* %112, i8** %4, align 8
   %113 = load i8*, i8** %4, align 8
-  %114 = getelementptr inbounds i8, i8* %113, i64 %112
-  store i8* %114, i8** %4, align 8
-  %115 = load i8*, i8** %4, align 8
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %115, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.8, i32 0, i32 0), i64 3, i32 1, i1 false)
-  %116 = load i8*, i8** %4, align 8
-  %117 = getelementptr inbounds i8, i8* %116, i64 3
-  store i8* %117, i8** %4, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %113, i8* getelementptr inbounds ([4 x i8], [4 x i8]* @.str.4, i32 0, i32 0), i64 3, i32 1, i1 false)
+  %114 = load i8*, i8** %4, align 8
+  %115 = getelementptr inbounds i8, i8* %114, i64 3
+  store i8* %115, i8** %4, align 8
+  br label %116
+
+; <label>:116:                                    ; preds = %105, %82
+  %117 = load i8*, i8** %4, align 8
+  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %117, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.6, i32 0, i32 0), i64 3, i32 1, i1 false)
   br label %118
 
-; <label>:118:                                    ; preds = %107, %84
-  %119 = load i8*, i8** %4, align 8
-  call void @llvm.memcpy.p0i8.p0i8.i64(i8* %119, i8* getelementptr inbounds ([3 x i8], [3 x i8]* @.str.10, i32 0, i32 0), i64 3, i32 1, i1 false)
-  br label %120
+; <label>:118:                                    ; preds = %116, %67
+  br label %119
 
-; <label>:120:                                    ; preds = %118, %69
-  br label %121
-
-; <label>:121:                                    ; preds = %120, %37
+; <label>:119:                                    ; preds = %118, %35
   ret void
 }
 
@@ -2028,18 +2144,17 @@ declare void @llvm.memcpy.p0i8.p0i8.i64(i8* nocapture writeonly, i8* nocapture r
 
 declare hidden i64 @luaV_mod(%struct.lua_State*, i64, i64) #1
 
-declare hidden i64 @luaV_div(%struct.lua_State*, i64, i64) #1
+declare hidden i64 @luaV_idiv(%struct.lua_State*, i64, i64) #1
 
 declare hidden i64 @luaV_shiftl(i64, i64) #1
 
 ; Function Attrs: nounwind
-declare double @pow(double, double) #2
+declare double @pow(double, double) #3
 
 ; Function Attrs: nounwind readnone speculatable
 declare double @llvm.floor.f64(double) #7
 
-; Function Attrs: nounwind
-declare double @fmod(double, double) #2
+declare hidden double @luaV_modf(%struct.lua_State*, double, double) #1
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i32 @isneg(i8**) #0 {
@@ -2089,7 +2204,7 @@ define internal i32 @isneg(i8**) #0 {
 }
 
 ; Function Attrs: nounwind readonly
-declare i8* @strpbrk(i8*, i8*) #3
+declare i8* @strpbrk(i8*, i8*) #2
 
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i8* @l_str2dloc(i8*, double*, i32) #0 {
@@ -2175,15 +2290,104 @@ define internal i8* @l_str2dloc(i8*, double*, i32) #0 {
 }
 
 ; Function Attrs: nounwind
-declare i8* @strcpy(i8*, i8*) #2
+declare i8* @strcpy(i8*, i8*) #3
 
 ; Function Attrs: nounwind
-declare double @strtod(i8*, i8**) #2
+declare %struct.lconv* @localeconv() #3
+
+; Function Attrs: nounwind
+declare double @strtod(i8*, i8**) #3
+
+; Function Attrs: nounwind readonly
+declare i64 @strspn(i8*, i8*) #2
+
+; Function Attrs: noinline nounwind optnone uwtable
+define internal void @pushstr(%struct.BuffFS*, i8*, i64) #0 {
+  %4 = alloca %struct.BuffFS*, align 8
+  %5 = alloca i8*, align 8
+  %6 = alloca i64, align 8
+  %7 = alloca %struct.lua_State*, align 8
+  %8 = alloca %struct.TValue*, align 8
+  %9 = alloca %struct.TString*, align 8
+  store %struct.BuffFS* %0, %struct.BuffFS** %4, align 8
+  store i8* %1, i8** %5, align 8
+  store i64 %2, i64* %6, align 8
+  %10 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %11 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %10, i32 0, i32 0
+  %12 = load %struct.lua_State*, %struct.lua_State** %11, align 8
+  store %struct.lua_State* %12, %struct.lua_State** %7, align 8
+  %13 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %14 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %13, i32 0, i32 6
+  %15 = load %union.StackValue*, %union.StackValue** %14, align 8
+  %16 = bitcast %union.StackValue* %15 to %struct.TValue*
+  store %struct.TValue* %16, %struct.TValue** %8, align 8
+  %17 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %18 = load i8*, i8** %5, align 8
+  %19 = load i64, i64* %6, align 8
+  %20 = call %struct.TString* @luaS_newlstr(%struct.lua_State* %17, i8* %18, i64 %19)
+  store %struct.TString* %20, %struct.TString** %9, align 8
+  %21 = load %struct.TString*, %struct.TString** %9, align 8
+  %22 = bitcast %struct.TString* %21 to %union.GCUnion*
+  %23 = bitcast %union.GCUnion* %22 to %struct.GCObject*
+  %24 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %25 = getelementptr inbounds %struct.TValue, %struct.TValue* %24, i32 0, i32 0
+  %26 = bitcast %union.Value* %25 to %struct.GCObject**
+  store %struct.GCObject* %23, %struct.GCObject** %26, align 8
+  %27 = load %struct.TString*, %struct.TString** %9, align 8
+  %28 = getelementptr inbounds %struct.TString, %struct.TString* %27, i32 0, i32 1
+  %29 = load i8, i8* %28, align 8
+  %30 = zext i8 %29 to i32
+  %31 = or i32 %30, 64
+  %32 = trunc i32 %31 to i8
+  %33 = load %struct.TValue*, %struct.TValue** %8, align 8
+  %34 = getelementptr inbounds %struct.TValue, %struct.TValue* %33, i32 0, i32 1
+  store i8 %32, i8* %34, align 8
+  %35 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %36 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %35, i32 0, i32 6
+  %37 = load %union.StackValue*, %union.StackValue** %36, align 8
+  %38 = getelementptr inbounds %union.StackValue, %union.StackValue* %37, i32 1
+  store %union.StackValue* %38, %union.StackValue** %36, align 8
+  %39 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %40 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %39, i32 0, i32 1
+  %41 = load i32, i32* %40, align 8
+  %42 = add nsw i32 %41, 1
+  store i32 %42, i32* %40, align 8
+  %43 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %44 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %43, i32 0, i32 1
+  %45 = load i32, i32* %44, align 8
+  %46 = icmp sgt i32 %45, 1
+  br i1 %46, label %47, label %63
+
+; <label>:47:                                     ; preds = %3
+  %48 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %49 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %48, i32 0, i32 6
+  %50 = load %union.StackValue*, %union.StackValue** %49, align 8
+  %51 = getelementptr inbounds %union.StackValue, %union.StackValue* %50, i64 2
+  %52 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %53 = getelementptr inbounds %struct.lua_State, %struct.lua_State* %52, i32 0, i32 10
+  %54 = load %union.StackValue*, %union.StackValue** %53, align 8
+  %55 = icmp ugt %union.StackValue* %51, %54
+  br i1 %55, label %56, label %63
+
+; <label>:56:                                     ; preds = %47
+  %57 = load %struct.lua_State*, %struct.lua_State** %7, align 8
+  %58 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %59 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %58, i32 0, i32 1
+  %60 = load i32, i32* %59, align 8
+  call void @luaV_concat(%struct.lua_State* %57, i32 %60)
+  %61 = load %struct.BuffFS*, %struct.BuffFS** %4, align 8
+  %62 = getelementptr inbounds %struct.BuffFS, %struct.BuffFS* %61, i32 0, i32 1
+  store i32 1, i32* %62, align 8
+  br label %63
+
+; <label>:63:                                     ; preds = %56, %47, %3
+  ret void
+}
 
 attributes #0 = { noinline nounwind optnone uwtable "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-jump-tables"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #1 = { "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #2 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
-attributes #3 = { nounwind readonly "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #2 = { nounwind readonly "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
+attributes #3 = { nounwind "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #4 = { noreturn "correctly-rounded-divide-sqrt-fp-math"="false" "disable-tail-calls"="false" "less-precise-fpmad"="false" "no-frame-pointer-elim"="true" "no-frame-pointer-elim-non-leaf" "no-infs-fp-math"="false" "no-nans-fp-math"="false" "no-signed-zeros-fp-math"="false" "no-trapping-math"="false" "stack-protector-buffer-size"="8" "target-cpu"="x86-64" "target-features"="+fxsr,+mmx,+sse,+sse2,+x87" "unsafe-fp-math"="false" "use-soft-float"="false" }
 attributes #5 = { nounwind }
 attributes #6 = { argmemonly nounwind }

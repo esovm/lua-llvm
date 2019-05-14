@@ -6,7 +6,7 @@ target triple = "x86_64-pc-linux-gnu"
 %struct._IO_FILE = type { i32, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, i8*, %struct._IO_marker*, %struct._IO_FILE*, i32, i32, i64, i16, i8, [1 x i8], i8*, i64, i8*, i8*, i8*, i8*, i64, i32, [20 x i8] }
 %struct._IO_marker = type { %struct._IO_marker*, %struct._IO_FILE*, i32 }
 %struct.lua_State = type opaque
-%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i32, i32, i32, i8, i8, i8, i8, [60 x i8], %struct.CallInfo* }
+%struct.lua_Debug = type { i32, i8*, i8*, i8*, i8*, i64, i32, i32, i32, i8, i8, i8, i8, i16, i16, [60 x i8], %struct.CallInfo* }
 %struct.CallInfo = type opaque
 
 @.str = private unnamed_addr constant [39 x i8] c"cannot create state: not enough memory\00", align 1
@@ -19,11 +19,11 @@ target triple = "x86_64-pc-linux-gnu"
 @.str.5 = private unnamed_addr constant [21 x i8] c"'%s' needs argument\0A\00", align 1
 @.str.6 = private unnamed_addr constant [26 x i8] c"unrecognized option '%s'\0A\00", align 1
 @.str.7 = private unnamed_addr constant [365 x i8] c"usage: %s [options] [script [args]]\0AAvailable options are:\0A  -e stat  execute string 'stat'\0A  -i       enter interactive mode after executing 'script'\0A  -l name  require library 'name' into global 'name'\0A  -v       show version information\0A  -E       ignore environment variables\0A  --       stop handling options\0A  -        stop handling options and execute stdin\0A\00", align 1
-@.str.8 = private unnamed_addr constant [52 x i8] c"Lua 5.3.5  Copyright (C) 1994-2018 Lua.org, PUC-Rio\00", align 1
+@.str.8 = private unnamed_addr constant [52 x i8] c"Lua 5.4.0  Copyright (C) 1994-2019 Lua.org, PUC-Rio\00", align 1
 @stdout = external global %struct._IO_FILE*, align 8
 @.str.9 = private unnamed_addr constant [2 x i8] c"\0A\00", align 1
 @.str.10 = private unnamed_addr constant [4 x i8] c"arg\00", align 1
-@.str.11 = private unnamed_addr constant [14 x i8] c"=LUA_INIT_5_3\00", align 1
+@.str.11 = private unnamed_addr constant [14 x i8] c"=LUA_INIT_5_4\00", align 1
 @.str.12 = private unnamed_addr constant [10 x i8] c"=LUA_INIT\00", align 1
 @globalL = internal global %struct.lua_State* null, align 8
 @.str.13 = private unnamed_addr constant [11 x i8] c"__tostring\00", align 1
@@ -168,7 +168,7 @@ define internal i32 @pmain(%struct.lua_State*) #0 {
   %15 = call i32 @collectargs(i8** %14, i32* %6)
   store i32 %15, i32* %7, align 4
   %16 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  call void @luaL_checkversion_(%struct.lua_State* %16, double 5.030000e+02, i64 136)
+  call void @luaL_checkversion_(%struct.lua_State* %16, double 5.040000e+02, i64 136)
   %17 = load i8**, i8*** %5, align 8
   %18 = getelementptr inbounds i8*, i8** %17, i64 0
   %19 = load i8*, i8** %18, align 8
@@ -205,7 +205,7 @@ define internal i32 @pmain(%struct.lua_State*) #0 {
   %41 = load i8*, i8** %40, align 8
   call void @print_usage(i8* %41)
   store i32 0, i32* %2, align 4
-  br label %108
+  br label %110
 
 ; <label>:42:                                     ; preds = %33
   %43 = load i32, i32* %7, align 4
@@ -238,97 +238,99 @@ define internal i32 @pmain(%struct.lua_State*) #0 {
   %58 = load i32, i32* %4, align 4
   %59 = load i32, i32* %6, align 4
   call void @createargtable(%struct.lua_State* %56, i8** %57, i32 %58, i32 %59)
-  %60 = load i32, i32* %7, align 4
-  %61 = and i32 %60, 16
-  %62 = icmp ne i32 %61, 0
-  br i1 %62, label %69, label %63
+  %60 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %61 = call i32 (%struct.lua_State*, i32, ...) @lua_gc(%struct.lua_State* %60, i32 10, i32 0, i32 0)
+  %62 = load i32, i32* %7, align 4
+  %63 = and i32 %62, 16
+  %64 = icmp ne i32 %63, 0
+  br i1 %64, label %71, label %65
 
-; <label>:63:                                     ; preds = %54
-  %64 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %65 = call i32 @handle_luainit(%struct.lua_State* %64)
-  %66 = icmp ne i32 %65, 0
-  br i1 %66, label %67, label %68
+; <label>:65:                                     ; preds = %54
+  %66 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %67 = call i32 @handle_luainit(%struct.lua_State* %66)
+  %68 = icmp ne i32 %67, 0
+  br i1 %68, label %69, label %70
 
-; <label>:67:                                     ; preds = %63
+; <label>:69:                                     ; preds = %65
   store i32 0, i32* %2, align 4
+  br label %110
+
+; <label>:70:                                     ; preds = %65
+  br label %71
+
+; <label>:71:                                     ; preds = %70, %54
+  %72 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %73 = load i8**, i8*** %5, align 8
+  %74 = load i32, i32* %6, align 4
+  %75 = call i32 @runargs(%struct.lua_State* %72, i8** %73, i32 %74)
+  %76 = icmp ne i32 %75, 0
+  br i1 %76, label %78, label %77
+
+; <label>:77:                                     ; preds = %71
+  store i32 0, i32* %2, align 4
+  br label %110
+
+; <label>:78:                                     ; preds = %71
+  %79 = load i32, i32* %6, align 4
+  %80 = load i32, i32* %4, align 4
+  %81 = icmp slt i32 %79, %80
+  br i1 %81, label %82, label %91
+
+; <label>:82:                                     ; preds = %78
+  %83 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  %84 = load i8**, i8*** %5, align 8
+  %85 = load i32, i32* %6, align 4
+  %86 = sext i32 %85 to i64
+  %87 = getelementptr inbounds i8*, i8** %84, i64 %86
+  %88 = call i32 @handle_script(%struct.lua_State* %83, i8** %87)
+  %89 = icmp ne i32 %88, 0
+  br i1 %89, label %90, label %91
+
+; <label>:90:                                     ; preds = %82
+  store i32 0, i32* %2, align 4
+  br label %110
+
+; <label>:91:                                     ; preds = %82, %78
+  %92 = load i32, i32* %7, align 4
+  %93 = and i32 %92, 2
+  %94 = icmp ne i32 %93, 0
+  br i1 %94, label %95, label %97
+
+; <label>:95:                                     ; preds = %91
+  %96 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  call void @doREPL(%struct.lua_State* %96)
   br label %108
 
-; <label>:68:                                     ; preds = %63
-  br label %69
+; <label>:97:                                     ; preds = %91
+  %98 = load i32, i32* %6, align 4
+  %99 = load i32, i32* %4, align 4
+  %100 = icmp eq i32 %98, %99
+  br i1 %100, label %101, label %107
 
-; <label>:69:                                     ; preds = %68, %54
-  %70 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %71 = load i8**, i8*** %5, align 8
-  %72 = load i32, i32* %6, align 4
-  %73 = call i32 @runargs(%struct.lua_State* %70, i8** %71, i32 %72)
-  %74 = icmp ne i32 %73, 0
-  br i1 %74, label %76, label %75
+; <label>:101:                                    ; preds = %97
+  %102 = load i32, i32* %7, align 4
+  %103 = and i32 %102, 12
+  %104 = icmp ne i32 %103, 0
+  br i1 %104, label %107, label %105
 
-; <label>:75:                                     ; preds = %69
-  store i32 0, i32* %2, align 4
-  br label %108
-
-; <label>:76:                                     ; preds = %69
-  %77 = load i32, i32* %6, align 4
-  %78 = load i32, i32* %4, align 4
-  %79 = icmp slt i32 %77, %78
-  br i1 %79, label %80, label %89
-
-; <label>:80:                                     ; preds = %76
-  %81 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  %82 = load i8**, i8*** %5, align 8
-  %83 = load i32, i32* %6, align 4
-  %84 = sext i32 %83 to i64
-  %85 = getelementptr inbounds i8*, i8** %82, i64 %84
-  %86 = call i32 @handle_script(%struct.lua_State* %81, i8** %85)
-  %87 = icmp ne i32 %86, 0
-  br i1 %87, label %88, label %89
-
-; <label>:88:                                     ; preds = %80
-  store i32 0, i32* %2, align 4
-  br label %108
-
-; <label>:89:                                     ; preds = %80, %76
-  %90 = load i32, i32* %7, align 4
-  %91 = and i32 %90, 2
-  %92 = icmp ne i32 %91, 0
-  br i1 %92, label %93, label %95
-
-; <label>:93:                                     ; preds = %89
-  %94 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  call void @doREPL(%struct.lua_State* %94)
-  br label %106
-
-; <label>:95:                                     ; preds = %89
-  %96 = load i32, i32* %6, align 4
-  %97 = load i32, i32* %4, align 4
-  %98 = icmp eq i32 %96, %97
-  br i1 %98, label %99, label %105
-
-; <label>:99:                                     ; preds = %95
-  %100 = load i32, i32* %7, align 4
-  %101 = and i32 %100, 12
-  %102 = icmp ne i32 %101, 0
-  br i1 %102, label %105, label %103
-
-; <label>:103:                                    ; preds = %99
+; <label>:105:                                    ; preds = %101
   call void @print_version()
-  %104 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  call void @doREPL(%struct.lua_State* %104)
-  br label %105
+  %106 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  call void @doREPL(%struct.lua_State* %106)
+  br label %107
 
-; <label>:105:                                    ; preds = %103, %99, %95
-  br label %106
-
-; <label>:106:                                    ; preds = %105, %93
-  %107 = load %struct.lua_State*, %struct.lua_State** %3, align 8
-  call void @lua_pushboolean(%struct.lua_State* %107, i32 1)
-  store i32 1, i32* %2, align 4
+; <label>:107:                                    ; preds = %105, %101, %97
   br label %108
 
-; <label>:108:                                    ; preds = %106, %88, %75, %67, %36
-  %109 = load i32, i32* %2, align 4
-  ret i32 %109
+; <label>:108:                                    ; preds = %107, %95
+  %109 = load %struct.lua_State*, %struct.lua_State** %3, align 8
+  call void @lua_pushboolean(%struct.lua_State* %109, i32 1)
+  store i32 1, i32* %2, align 4
+  br label %110
+
+; <label>:110:                                    ; preds = %108, %90, %77, %69, %36
+  %111 = load i32, i32* %2, align 4
+  ret i32 %111
 }
 
 declare void @lua_pushinteger(%struct.lua_State*, i64) #1
@@ -732,6 +734,8 @@ define internal void @createargtable(%struct.lua_State*, i8**, i32, i32) #0 {
   ret void
 }
 
+declare i32 @lua_gc(%struct.lua_State*, i32, ...) #1
+
 ; Function Attrs: noinline nounwind optnone uwtable
 define internal i32 @handle_luainit(%struct.lua_State*) #0 {
   %2 = alloca i32, align 4
@@ -974,54 +978,55 @@ define internal void @doREPL(%struct.lua_State*) #0 {
   %5 = load i8*, i8** @progname, align 8
   store i8* %5, i8** %4, align 8
   store i8* null, i8** @progname, align 8
-  br label %6
+  %6 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  br label %7
 
-; <label>:6:                                      ; preds = %25, %1
-  %7 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %8 = call i32 @loadline(%struct.lua_State* %7)
-  store i32 %8, i32* %3, align 4
-  %9 = icmp ne i32 %8, -1
-  br i1 %9, label %10, label %26
+; <label>:7:                                      ; preds = %26, %1
+  %8 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  %9 = call i32 @loadline(%struct.lua_State* %8)
+  store i32 %9, i32* %3, align 4
+  %10 = icmp ne i32 %9, -1
+  br i1 %10, label %11, label %27
 
-; <label>:10:                                     ; preds = %6
-  %11 = load i32, i32* %3, align 4
-  %12 = icmp eq i32 %11, 0
-  br i1 %12, label %13, label %16
+; <label>:11:                                     ; preds = %7
+  %12 = load i32, i32* %3, align 4
+  %13 = icmp eq i32 %12, 0
+  br i1 %13, label %14, label %17
 
-; <label>:13:                                     ; preds = %10
-  %14 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %15 = call i32 @docall(%struct.lua_State* %14, i32 0, i32 -1)
-  store i32 %15, i32* %3, align 4
-  br label %16
+; <label>:14:                                     ; preds = %11
+  %15 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  %16 = call i32 @docall(%struct.lua_State* %15, i32 0, i32 -1)
+  store i32 %16, i32* %3, align 4
+  br label %17
 
-; <label>:16:                                     ; preds = %13, %10
-  %17 = load i32, i32* %3, align 4
-  %18 = icmp eq i32 %17, 0
-  br i1 %18, label %19, label %21
+; <label>:17:                                     ; preds = %14, %11
+  %18 = load i32, i32* %3, align 4
+  %19 = icmp eq i32 %18, 0
+  br i1 %19, label %20, label %22
 
-; <label>:19:                                     ; preds = %16
-  %20 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @l_print(%struct.lua_State* %20)
-  br label %25
+; <label>:20:                                     ; preds = %17
+  %21 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @l_print(%struct.lua_State* %21)
+  br label %26
 
-; <label>:21:                                     ; preds = %16
-  %22 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  %23 = load i32, i32* %3, align 4
-  %24 = call i32 @report(%struct.lua_State* %22, i32 %23)
-  br label %25
+; <label>:22:                                     ; preds = %17
+  %23 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  %24 = load i32, i32* %3, align 4
+  %25 = call i32 @report(%struct.lua_State* %23, i32 %24)
+  br label %26
 
-; <label>:25:                                     ; preds = %21, %19
-  br label %6
+; <label>:26:                                     ; preds = %22, %20
+  br label %7
 
-; <label>:26:                                     ; preds = %6
-  %27 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @lua_settop(%struct.lua_State* %27, i32 0)
-  %28 = load %struct._IO_FILE*, %struct._IO_FILE** @stdout, align 8
-  %29 = call i64 @fwrite(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.9, i32 0, i32 0), i64 1, i64 1, %struct._IO_FILE* %28)
-  %30 = load %struct._IO_FILE*, %struct._IO_FILE** @stdout, align 8
-  %31 = call i32 @fflush(%struct._IO_FILE* %30)
-  %32 = load i8*, i8** %4, align 8
-  store i8* %32, i8** @progname, align 8
+; <label>:27:                                     ; preds = %7
+  %28 = load %struct.lua_State*, %struct.lua_State** %2, align 8
+  call void @lua_settop(%struct.lua_State* %28, i32 0)
+  %29 = load %struct._IO_FILE*, %struct._IO_FILE** @stdout, align 8
+  %30 = call i64 @fwrite(i8* getelementptr inbounds ([2 x i8], [2 x i8]* @.str.9, i32 0, i32 0), i64 1, i64 1, %struct._IO_FILE* %29)
+  %31 = load %struct._IO_FILE*, %struct._IO_FILE** @stdout, align 8
+  %32 = call i32 @fflush(%struct._IO_FILE* %31)
+  %33 = load i8*, i8** %4, align 8
+  store i8* %33, i8** @progname, align 8
   ret void
 }
 

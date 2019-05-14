@@ -6,7 +6,8 @@ target triple = "x86_64-pc-linux-gnu"
 %struct.luaL_Reg = type { i8*, i32 (%struct.lua_State*)* }
 %struct.lua_State = type opaque
 %struct.tm = type { i32, i32, i32, i32, i32, i32, i32, i32, i32, i64, i8* }
-%struct.luaL_Buffer = type { i8*, i64, i64, %struct.lua_State*, [8192 x i8] }
+%struct.luaL_Buffer = type { i8*, i64, i64, %struct.lua_State*, %union.anon }
+%union.anon = type { double, [1016 x i8] }
 
 @syslib = internal constant [12 x %struct.luaL_Reg] [%struct.luaL_Reg { i8* getelementptr inbounds ([6 x i8], [6 x i8]* @.str, i32 0, i32 0), i32 (%struct.lua_State*)* @os_clock }, %struct.luaL_Reg { i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.1, i32 0, i32 0), i32 (%struct.lua_State*)* @os_date }, %struct.luaL_Reg { i8* getelementptr inbounds ([9 x i8], [9 x i8]* @.str.2, i32 0, i32 0), i32 (%struct.lua_State*)* @os_difftime }, %struct.luaL_Reg { i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.3, i32 0, i32 0), i32 (%struct.lua_State*)* @os_execute }, %struct.luaL_Reg { i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.4, i32 0, i32 0), i32 (%struct.lua_State*)* @os_exit }, %struct.luaL_Reg { i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.5, i32 0, i32 0), i32 (%struct.lua_State*)* @os_getenv }, %struct.luaL_Reg { i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.6, i32 0, i32 0), i32 (%struct.lua_State*)* @os_remove }, %struct.luaL_Reg { i8* getelementptr inbounds ([7 x i8], [7 x i8]* @.str.7, i32 0, i32 0), i32 (%struct.lua_State*)* @os_rename }, %struct.luaL_Reg { i8* getelementptr inbounds ([10 x i8], [10 x i8]* @.str.8, i32 0, i32 0), i32 (%struct.lua_State*)* @os_setlocale }, %struct.luaL_Reg { i8* getelementptr inbounds ([5 x i8], [5 x i8]* @.str.9, i32 0, i32 0), i32 (%struct.lua_State*)* @os_time }, %struct.luaL_Reg { i8* getelementptr inbounds ([8 x i8], [8 x i8]* @.str.10, i32 0, i32 0), i32 (%struct.lua_State*)* @os_tmpname }, %struct.luaL_Reg zeroinitializer], align 16
 @.str = private unnamed_addr constant [6 x i8] c"clock\00", align 1
@@ -52,7 +53,7 @@ define i32 @luaopen_os(%struct.lua_State*) #0 {
   %2 = alloca %struct.lua_State*, align 8
   store %struct.lua_State* %0, %struct.lua_State** %2, align 8
   %3 = load %struct.lua_State*, %struct.lua_State** %2, align 8
-  call void @luaL_checkversion_(%struct.lua_State* %3, double 5.030000e+02, i64 136)
+  call void @luaL_checkversion_(%struct.lua_State* %3, double 5.040000e+02, i64 136)
   %4 = load %struct.lua_State*, %struct.lua_State** %2, align 8
   call void @lua_createtable(%struct.lua_State* %4, i32 0, i32 11)
   %5 = load %struct.lua_State*, %struct.lua_State** %2, align 8
